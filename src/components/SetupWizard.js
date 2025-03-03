@@ -186,10 +186,10 @@ const SetupWizard = ({ onComplete }) => {
             
             <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900 rounded-lg">
               <p className="text-sm">
-                <strong>Example URL:</strong> https://docs.google.com/spreadsheets/d/<span className="font-mono bg-yellow-100 dark:bg-yellow-800 px-1">1DI6UBOuxRaeXQ0FXdMyfV7-5mOUrqqnnKxJiSxanKcE</span>/edit
+                <strong>Example URL:</strong> https://docs.google.com/spreadsheets/d/<span className="font-mono bg-yellow-100 dark:bg-yellow-800 px-1">1xAzo6vCafjT6XekXP-nmN_gapEfnvyCjyyk4ZPo1K3I</span>/edit
               </p>
               <p className="text-sm mt-2">
-                <strong>Sheet ID:</strong> <span className="font-mono bg-yellow-100 dark:bg-yellow-800 px-1">1DI6UBOuxRaeXQ0FXdMyfV7-5mOUrqqnnKxJiSxanKcE</span>
+                <strong>Sheet ID:</strong> <span className="font-mono bg-yellow-100 dark:bg-yellow-800 px-1">1xAzo6vCafjT6XekXP-nmN_gapEfnvyCjyyk4ZPo1K3I</span>
               </p>
             </div>
             
