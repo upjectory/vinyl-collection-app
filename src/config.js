@@ -5,8 +5,8 @@
 
 const config = {
   // The ID of your Google Sheet (from the URL)
-  // Default is the example sheet: https://docs.google.com/spreadsheets/d/1DI6UBOuxRaeXQ0FXdMyfV7-5mOUrqqnnKxJiSxanKcE/edit
-  googleSheetId: '1DI6UBOuxRaeXQ0FXdMyfV7-5mOUrqqnnKxJiSxanKcE',
+  // Default is the example sheet: https://docs.google.com/spreadsheets/d/1xAzo6vCafjT6XekXP-nmN_gapEfnvyCjyyk4ZPo1K3I/edit?usp=sharing
+  googleSheetId: '1xAzo6vCafjT6XekXP-nmN_gapEfnvyCjyyk4ZPo1K3I',
   
   // App title that appears in the header
   appTitle: 'Vinyl Collection',
