@@ -5,14 +5,17 @@ import AlbumGrid from './components/AlbumGrid';
 import AlbumTable from './components/AlbumTable';
 import Footer from './components/Footer';
 import StatsModal from './components/StatsModal';
-import { fetchVinylData } from './services/googleSheets';
+import SetupWizard from './components/SetupWizard';
+import { fetchVinylData, getSavedSheetId } from './services/googleSheets';
+import config from './config';
 
 function App() {
   const [albums, setAlbums] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
+  const [viewMode, setViewMode] = useState(config.defaultViewMode || 'grid'); // 'grid' or 'table'
   const [showStatsModal, setShowStatsModal] = useState(false);
+  const [showSetupWizard, setShowSetupWizard] = useState(false);
   
   // State for filtering
   const [filters, setFilters] = useState({
@@ -25,21 +28,33 @@ function App() {
   });
 
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchVinylData();
-        setAlbums(data);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error loading vinyl data:', err);
-        setError('Failed to load vinyl collection data. Please try again later.');
-        setLoading(false);
-      }
-    };
+    // Check if it's the first visit
+    const hasVisitedBefore = localStorage.getItem('vinylCollectionSetupComplete');
+    if (!hasVisitedBefore) {
+      setShowSetupWizard(true);
+      localStorage.setItem('vinylCollectionSetupComplete', 'true');
+    }
     
-    loadData();
+    loadVinylData();
   }, []);
+
+  const loadVinylData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Get the saved sheet ID or use the default
+      const sheetId = getSavedSheetId();
+      
+      const data = await fetchVinylData(sheetId);
+      setAlbums(data);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error loading vinyl data:', err);
+      setError('Failed to load vinyl collection data. Please check your Google Sheet ID and permissions.');
+      setLoading(false);
+    }
+  };
 
   const toggleViewMode = () => {
     setViewMode(viewMode === 'grid' ? 'table' : 'grid');
@@ -47,6 +62,15 @@ function App() {
 
   const toggleStatsModal = () => {
     setShowStatsModal(!showStatsModal);
+  };
+  
+  const handleSetupComplete = () => {
+    setShowSetupWizard(false);
+    loadVinylData();
+  };
+  
+  const openSetupWizard = () => {
+    setShowSetupWizard(true);
   };
 
   // Filter album data based on current filters
@@ -62,9 +86,9 @@ function App() {
   });
 
   // Generate categories, artists, and genres for filter dropdowns
-  const categories = [...new Set(albums.map(album => album.category))];
-  const artists = [...new Set(albums.map(album => album.artist))];
-  const genres = [...new Set(albums.filter(album => album.genre).map(album => album.genre))];
+  const categories = [...new Set(albums.map(album => album.category))].filter(Boolean);
+  const artists = [...new Set(albums.map(album => album.artist))].filter(Boolean);
+  const genres = [...new Set(albums.filter(album => album.genre).map(album => album.genre))].filter(Boolean);
 
   // Handle adding or editing notes
   const updateAlbumNote = (albumIndex, newNote) => {
@@ -84,6 +108,7 @@ function App() {
         toggleViewMode={toggleViewMode} 
         viewMode={viewMode} 
         toggleStatsModal={toggleStatsModal}
+        openSetupWizard={openSetupWizard}
       />
       
       <main className="container mx-auto px-4 py-6">
@@ -100,8 +125,14 @@ function App() {
             <p className="text-xl">Loading your vinyl collection...</p>
           </div>
         ) : error ? (
-          <div className="flex justify-center items-center h-64">
-            <p className="text-red-500">{error}</p>
+          <div className="flex flex-col justify-center items-center h-64">
+            <p className="text-red-500 mb-4">{error}</p>
+            <button
+              onClick={openSetupWizard}
+              className="bg-vinyl-primary text-white px-4 py-2 rounded-md hover:bg-vinyl-secondary transition-colors"
+            >
+              Setup Your Collection
+            </button>
           </div>
         ) : (
           <>
@@ -125,6 +156,10 @@ function App() {
           albums={albums} 
           onClose={toggleStatsModal} 
         />
+      )}
+      
+      {showSetupWizard && (
+        <SetupWizard onComplete={handleSetupComplete} />
       )}
     </div>
   );
