@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Function to load data from a Google Sheet
-export const fetchVinylData = async (sheetId = '1DI6UBOuxRaeXQ0FXdMyfV7-5mOUrqqnnKxJiSxanKcE') => {
+export const fetchVinylData = async (sheetId = '1xAzo6vCafjT6XekXP-nmN_gapEfnvyCjyyk4ZPo1K3I') => {
   try {
     // Construct the URL to fetch the sheet as CSV
     const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`;
@@ -59,7 +59,7 @@ const parseCSV = (csvData) => {
       let value = values[index] || '';
       
       // Clean up the value (remove quotes, etc.)
-      value = value.trim().replace(/^"|"$/g, '');
+      value = value.trim().replace(/^\"|\"$/g, '');
       
       // Convert year to number if possible
       if (header === 'year' && value) {
@@ -106,5 +106,5 @@ export const saveSheetId = (sheetId) => {
 
 // Function to get the saved Google Sheet ID from local storage
 export const getSavedSheetId = () => {
-  return localStorage.getItem('vinylCollectionSheetId') || '1DI6UBOuxRaeXQ0FXdMyfV7-5mOUrqqnnKxJiSxanKcE';
+  return localStorage.getItem('vinylCollectionSheetId') || '1xAzo6vCafjT6XekXP-nmN_gapEfnvyCjyyk4ZPo1K3I';
 };
