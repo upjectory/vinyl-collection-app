@@ -58,7 +58,7 @@ This app requires a Google Sheet with the following columns:
 
 ### Template Sheet
 
-You can copy our template sheet: [Vinyl Collection Template](https://docs.google.com/spreadsheets/d/1DI6UBOuxRaeXQ0FXdMyfV7-5mOUrqqnnKxJiSxanKcE/copy)
+You can copy our template sheet: [Vinyl Collection Template](https://docs.google.com/spreadsheets/d/1xAzo6vCafjT6XekXP-nmN_gapEfnvyCjyyk4ZPo1K3I/copy)
 
 Important: Make sure to set the sharing permissions to "Anyone with the link can view" for the app to be able to access your data.
 
