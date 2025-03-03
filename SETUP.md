@@ -99,6 +99,9 @@ To run the application locally:
 
 4. When you first open the app, you'll be guided through the setup wizard where you can paste your Google Sheet ID
 
+5. Alternatively, you can use our template as a starting point:
+   [Vinyl Collection Template](https://docs.google.com/spreadsheets/d/1xAzo6vCafjT6XekXP-nmN_gapEfnvyCjyyk4ZPo1K3I/copy)
+
 ## Further Customization
 
 You can customize the app by editing the `src/config.js` file:
