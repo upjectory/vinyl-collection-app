@@ -9,6 +9,7 @@
         :root {
             color-scheme: dark;
             --accent-green: #34D399;
+            --accent-light: #a7f3d0;
         }
         
         body {
@@ -42,12 +43,49 @@
             margin: 0;
         }
         
+        /* Filter toggle */
+        .filter-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #111;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: 1px solid #333;
+        }
+
+        .filter-toggle:hover {
+            background-color: #1a1a1a;
+        }
+
+        .filter-toggle-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--accent-green);
+            margin: 0;
+        }
+
+        .filter-toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .filter-toggle-icon.open {
+            transform: rotate(180deg);
+        }
+        
         /* Filters */
         .filters {
             background-color: #111;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 0 0 8px 8px;
             margin-bottom: 25px;
+            border: 1px solid #333;
+            border-top: none;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
         }
         
         .filter-row {
@@ -253,9 +291,24 @@
         .album-meta {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
-            color: #6b7280;
+            font-size: 13px;
             margin-top: auto;
+        }
+        
+        .album-year {
+            font-weight: 600;
+            color: var(--accent-light);
+            background-color: rgba(52, 211, 153, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        
+        .album-genre {
+            font-weight: 600;
+            color: var(--accent-light);
+            background-color: rgba(52, 211, 153, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
         }
         
         /* Footer */
@@ -323,6 +376,11 @@
     </header>
     
     <main class="container">
+        <div id="filter-toggle" class="filter-toggle">
+            <h2 class="filter-toggle-title">Filter Collection</h2>
+            <div id="filter-toggle-icon" class="filter-toggle-icon">▼</div>
+        </div>
+        
         <div id="filters" class="filters" style="display: none;">
             <div class="filter-row">
                 <div class="filter-group">
@@ -377,6 +435,20 @@
         // Set current year in footer
         document.getElementById('current-year').textContent = new Date().getFullYear();
         
+        // Setup filter toggle functionality
+        const filterToggle = document.getElementById('filter-toggle');
+        const filtersSection = document.getElementById('filters');
+        const filterToggleIcon = document.getElementById('filter-toggle-icon');
+        let filtersVisible = false;
+        
+        function toggleFilters() {
+            filtersVisible = !filtersVisible;
+            filtersSection.style.display = filtersVisible ? 'block' : 'none';
+            filterToggleIcon.classList.toggle('open', filtersVisible);
+        }
+        
+        filterToggle.addEventListener('click', toggleFilters);
+        
         // Global albums array to store all albums for filtering
         let allAlbums = [];
         
@@ -386,7 +458,6 @@
             const error = document.getElementById('error');
             const albumsGrid = document.getElementById('albums-grid');
             const counter = document.getElementById('counter');
-            const filters = document.getElementById('filters');
             
             try {
                 // Published CSV URL from Google Sheets
@@ -462,8 +533,10 @@
                 loading.style.display = 'none';
                 albumsGrid.style.display = 'grid';
                 counter.style.display = 'block';
-                filters.style.display = 'block';
                 counter.textContent = `Showing ${albums.length} records`;
+                
+                // Show filters after loading data
+                filterToggle.style.display = 'flex';
                 
             } catch (err) {
                 console.error('Error fetching vinyl data:', err);
@@ -612,34 +685,64 @@
                 return;
             }
             
-            // Generate placeholder URL
-            function getPlaceholderUrl(title, artist) {
-                const encodedText = encodeURIComponent((artist || 'Album').substring(0, 10));
-                return `https://placehold.co/400x400/121212/FFFFFF?text=${encodedText}`;
-            }
-            
             // Create album cards
             albums.forEach(album => {
                 const card = document.createElement('div');
                 card.className = 'album-card';
                 
-                // Make entire card clickable if Spotify URL exists
+                const imageContainer = document.createElement('div');
+                imageContainer.className = 'album-image-container';
+                
+                // Make image container clickable if Spotify URL exists
                 if (album.spotifyurl) {
-                    card.style.cursor = 'pointer';
-                    card.addEventListener('click', () => {
+                    imageContainer.style.cursor = 'pointer';
+                    imageContainer.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Prevent triggering parent click
                         window.open(album.spotifyurl, '_blank', 'noopener,noreferrer');
                     });
                 }
                 
-                const imageContainer = document.createElement('div');
-                imageContainer.className = 'album-image-container';
-                
+                // Improved artwork loading with better fallback
                 const image = document.createElement('img');
                 image.className = 'album-image';
-                image.src = album.artwork || getPlaceholderUrl(album.title, album.artist);
+                
+                // Use iTunes API to search for album artwork if not provided
+                const artworkUrl = album.artwork || '';
+                if (artworkUrl && artworkUrl.trim() !== '') {
+                    image.src = artworkUrl;
+                } else {
+                    // Generate a placeholder URL with artist name
+                    const placeholderText = encodeURIComponent((album.artist || 'Album').substring(0, 10));
+                    image.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
+                    
+                    // Try to fetch from iTunes if we have both artist and title
+                    if (album.artist && album.title) {
+                        const searchTerm = encodeURIComponent(`${album.artist} ${album.title}`);
+                        const itunesUrl = `https://itunes.apple.com/search?term=${searchTerm}&media=music&entity=album&limit=1`;
+                        
+                        fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(itunesUrl)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                try {
+                                    const itunesData = JSON.parse(data.contents);
+                                    if (itunesData.resultCount > 0) {
+                                        const artworkUrl = itunesData.results[0].artworkUrl100.replace('100x100', '400x400');
+                                        image.src = artworkUrl;
+                                    }
+                                } catch (e) {
+                                    console.log('Error fetching iTunes artwork', e);
+                                }
+                            })
+                            .catch(error => {
+                                console.log('Error fetching from iTunes API', error);
+                            });
+                    }
+                }
+                
                 image.alt = `${album.title} by ${album.artist}`;
                 image.onerror = function() {
-                    this.src = getPlaceholderUrl(album.title, album.artist);
+                    const placeholderText = encodeURIComponent((album.artist || 'Album').substring(0, 10));
+                    this.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
                 };
                 
                 imageContainer.appendChild(image);
@@ -687,10 +790,14 @@
                 const meta = document.createElement('div');
                 meta.className = 'album-meta';
                 
+                // Improved year display with better styling
                 const year = document.createElement('span');
+                year.className = 'album-year';
                 year.textContent = album.year || '';
                 
+                // Improved genre display with better styling
                 const genre = document.createElement('span');
+                genre.className = 'album-genre';
                 genre.textContent = album.genre || '';
                 
                 meta.appendChild(year);
@@ -704,11 +811,6 @@
                 card.appendChild(info);
                 
                 albumsGrid.appendChild(card);
-                
-                // Log Spotify URL for debugging
-                if (album.spotifyurl) {
-                    console.log(`Album "${album.title}" has Spotify URL: ${album.spotifyurl}`);
-                }
             });
         }
         
