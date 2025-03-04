@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-# Add this permissions section
+# Add permissions section
 permissions:
   contents: write
 
@@ -13,10 +13,10 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 🛎️
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Node.js 🔧
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
@@ -36,11 +36,11 @@ jobs:
         run: |
           npx tailwindcss init -p
           
-      - name: Build 🏗️
+      - name: Build
         run: npm run build
 
-      - name: Deploy to GitHub Pages 🚀
+      - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: build # The folder the action should deploy
-          branch: gh-pages # The branch the action should deploy to
+          folder: build
+          branch: gh-pages
