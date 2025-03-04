@@ -5,7 +5,6 @@ import AlbumGrid from './components/AlbumGrid';
 import AlbumTable from './components/AlbumTable';
 import Footer from './components/Footer';
 import StatsModal from './components/StatsModal';
-import SetupWizard from './components/SetupWizard';
 import { fetchVinylData, getSavedSheetId } from './services/googleSheets';
 import config from './config';
 
@@ -104,8 +103,6 @@ function App() {
       notes: newNote
     };
     setAlbums(updatedAlbums);
-    
-    // Here you could add logic to sync back to Google Sheets if needed
   };
 
   return (
@@ -165,7 +162,20 @@ function App() {
       )}
       
       {showSetupWizard && (
-        <SetupWizard onComplete={handleSetupComplete} />
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-lg max-w-lg w-full">
+            <h2 className="text-xl font-bold mb-4">Setup Required</h2>
+            <p className="mb-4">
+              Please set up your vinyl collection by connecting to a Google Sheet.
+            </p>
+            <button
+              onClick={handleSetupComplete}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+            >
+              Continue with Demo Data
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
