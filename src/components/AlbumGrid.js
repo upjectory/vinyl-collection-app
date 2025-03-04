@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import placeholder from '../assets/placeholder-album.png';
+import placeholderImage from '../assets/placeholder-album.png';
 
 /**
  * AlbumGrid component for displaying albums in a grid layout
@@ -20,7 +20,7 @@ const AlbumGrid = ({ albums, updateAlbumNote }) => {
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
       {albums.map((album, index) => (
         <AlbumCard 
           key={`${album.artist}-${album.title}-${index}`}
@@ -38,25 +38,25 @@ const AlbumGrid = ({ albums, updateAlbumNote }) => {
  */
 const AlbumCard = ({ album, index, updateAlbumNote }) => {
   // Default image if none provided
-  const albumArtwork = album.artwork || placeholder;
+  const albumArtwork = album.artwork || placeholderImage;
 
   return (
     <motion.div 
-      className="bg-vinyl-card-light dark:bg-vinyl-card-dark rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
+      className="bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
       whileHover={{ y: -5 }}
     >
       {/* Album artwork */}
-      <div className="relative aspect-square overflow-hidden bg-gray-200 dark:bg-gray-700">
+      <div className="relative aspect-square overflow-hidden bg-gray-900">
         <img 
           src={albumArtwork} 
           alt={`${album.title} by ${album.artist}`} 
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-300 album-artwork"
           onError={(e) => {
             e.target.onerror = null;
-            e.target.src = placeholder;
+            e.target.src = placeholderImage;
           }}
         />
         
@@ -80,9 +80,9 @@ const AlbumCard = ({ album, index, updateAlbumNote }) => {
       {/* Album info */}
       <div className="p-3">
         <h3 className="font-bold text-sm truncate">{album.title}</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{album.artist}</p>
+        <p className="text-sm text-gray-400 truncate">{album.artist}</p>
         
-        <div className="flex justify-between mt-2 text-xs text-gray-500 dark:text-gray-400">
+        <div className="flex justify-between mt-2 text-xs text-gray-500">
           <span>{album.year}</span>
           <span>{album.genre}</span>
         </div>
