@@ -9,6 +9,9 @@ import SetupWizard from './components/SetupWizard';
 import { fetchVinylData, getSavedSheetId } from './services/googleSheets';
 import config from './config';
 
+/**
+ * Main App component for the Vinyl Collection application
+ */
 function App() {
   const [albums, setAlbums] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +31,9 @@ function App() {
   });
 
   useEffect(() => {
+    // Force dark mode
+    document.documentElement.classList.add('dark');
+    
     // Check if it's the first visit
     const hasVisitedBefore = localStorage.getItem('vinylCollectionSetupComplete');
     if (!hasVisitedBefore) {
@@ -77,8 +83,8 @@ function App() {
   const filteredAlbums = albums.filter(album => {
     return (
       (filters.category === '' || album.category === filters.category) &&
-      (filters.artist === '' || album.artist === filters.artist) &&
-      (filters.title === '' || album.title.toLowerCase().includes(filters.title.toLowerCase())) &&
+      (filters.artist === '' || (album.artist && album.artist.toLowerCase().includes(filters.artist.toLowerCase()))) &&
+      (filters.title === '' || (album.title && album.title.toLowerCase().includes(filters.title.toLowerCase()))) &&
       (filters.year === '' || album.year === parseInt(filters.year)) &&
       (filters.genre === '' || album.genre === filters.genre) &&
       (!filters.favoritesOnly || album.favorite)
@@ -86,8 +92,8 @@ function App() {
   });
 
   // Generate categories, artists, and genres for filter dropdowns
-  const categories = [...new Set(albums.map(album => album.category))].filter(Boolean);
-  const artists = [...new Set(albums.map(album => album.artist))].filter(Boolean);
+  const categories = [...new Set(albums.filter(album => album.category).map(album => album.category))].filter(Boolean);
+  const artists = [...new Set(albums.filter(album => album.artist).map(album => album.artist))].filter(Boolean);
   const genres = [...new Set(albums.filter(album => album.genre).map(album => album.genre))].filter(Boolean);
 
   // Handle adding or editing notes
@@ -103,7 +109,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-vinyl-background-light dark:bg-vinyl-background-dark text-vinyl-text-light dark:text-vinyl-text-dark">
+    <div className="min-h-screen bg-black text-white">
       <Header 
         toggleViewMode={toggleViewMode} 
         viewMode={viewMode} 
@@ -129,7 +135,7 @@ function App() {
             <p className="text-red-500 mb-4">{error}</p>
             <button
               onClick={openSetupWizard}
-              className="bg-vinyl-primary text-white px-4 py-2 rounded-md hover:bg-vinyl-secondary transition-colors"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
             >
               Setup Your Collection
             </button>
@@ -142,7 +148,7 @@ function App() {
               <AlbumTable albums={filteredAlbums} updateAlbumNote={updateAlbumNote} />
             )}
             
-            <div className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+            <div className="mt-4 text-sm text-gray-400">
               Showing {filteredAlbums.length} of {albums.length} records
             </div>
           </>
