@@ -33,14 +33,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          # Disable caching to avoid the cache error
-          # cache: 'npm'
       
-      - name: Install Dependencies
+      - name: Clean Install Dependencies
         run: npm ci
+      
+      - name: Install Missing Dependencies
+        run: npm install autoprefixer
       
       - name: Build
         run: npm run build
+        env:
+          CI: false
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
