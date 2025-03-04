@@ -8,6 +8,7 @@
         /* Base styles */
         :root {
             color-scheme: dark;
+            --accent-green: #34D399;
         }
         
         body {
@@ -32,7 +33,7 @@
             background-color: #000;
             border-bottom: 1px solid #333;
             padding: 20px 0;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
         
         .site-title {
@@ -41,9 +42,71 @@
             margin: 0;
         }
         
-        .site-title .blue { color: #60A5FA; }
-        .site-title .green { color: #34D399; }
-        .site-title .purple { color: #A78BFA; }
+        /* Filters */
+        .filters {
+            background-color: #111;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 180px;
+        }
+        
+        .filter-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        
+        .filter-input {
+            width: 100%;
+            padding: 8px 12px;
+            background-color: #222;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--accent-green);
+        }
+        
+        select.filter-input {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+        
+        .filter-reset {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .filter-reset:hover {
+            background-color: #444;
+        }
         
         /* Loading state */
         .loading {
@@ -79,15 +142,18 @@
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, outline 0.2s ease;
             height: 100%;
             display: flex;
             flex-direction: column;
+            outline: 2px solid transparent;
+            outline-offset: 2px;
         }
         
         .album-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+            outline: 2px solid var(--accent-green);
         }
         
         .album-image-container {
@@ -96,18 +162,6 @@
             background-color: #111;
             overflow: hidden;
             cursor: pointer;
-        }
-        
-        .album-image-container:hover::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border: 3px solid #34D399;
-            border-radius: 4px;
-            pointer-events: none;
         }
         
         .album-image {
@@ -180,6 +234,11 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            transition: color 0.3s ease;
+        }
+        
+        .album-card:hover .album-title {
+            color: var(--accent-green);
         }
         
         .album-artist {
@@ -215,15 +274,41 @@
             margin-bottom: 20px;
         }
         
+        /* No results message */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 30px;
+            background-color: #111;
+            border-radius: 8px;
+            color: #9ca3af;
+        }
+        
         /* Responsive adjustments */
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
             .albums-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
                 gap: 15px;
+            }
+            
+            .filter-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .filter-group {
+                width: 100%;
             }
             
             .site-title {
                 font-size: 24px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .albums-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 12px;
             }
         }
     </style>
@@ -238,6 +323,44 @@
     </header>
     
     <main class="container">
+        <div id="filters" class="filters" style="display: none;">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="title-filter" class="filter-label">Title</label>
+                    <input type="text" id="title-filter" class="filter-input" placeholder="Filter by title...">
+                </div>
+                <div class="filter-group">
+                    <label for="artist-filter" class="filter-label">Artist</label>
+                    <select id="artist-filter" class="filter-input">
+                        <option value="">All Artists</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="genre-filter" class="filter-label">Genre</label>
+                    <select id="genre-filter" class="filter-input">
+                        <option value="">All Genres</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="year-filter" class="filter-label">Year</label>
+                    <select id="year-filter" class="filter-input">
+                        <option value="">All Years</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="category-filter" class="filter-label">Category</label>
+                    <select id="category-filter" class="filter-input">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="display: flex; align-items: flex-end;">
+                    <button id="reset-filters" class="filter-reset">Reset Filters</button>
+                </div>
+            </div>
+        </div>
+        
         <div id="loading" class="loading">Loading vinyl collection...</div>
         <div id="error" class="error" style="display: none;"></div>
         <div id="albums-grid" class="albums-grid" style="display: none;"></div>
@@ -254,12 +377,16 @@
         // Set current year in footer
         document.getElementById('current-year').textContent = new Date().getFullYear();
         
+        // Global albums array to store all albums for filtering
+        let allAlbums = [];
+        
         // Function to fetch data from Google Sheets
         async function fetchVinylData() {
             const loading = document.getElementById('loading');
             const error = document.getElementById('error');
             const albumsGrid = document.getElementById('albums-grid');
             const counter = document.getElementById('counter');
+            const filters = document.getElementById('filters');
             
             try {
                 // Published CSV URL from Google Sheets
@@ -273,12 +400,12 @@
                 }
                 
                 const csvText = await response.text();
-                console.log("CSV data:", csvText.substring(0, 500)); // Log the first 500 chars for debugging
+                console.log("CSV data received, length:", csvText.length);
                 
                 // Parse CSV manually
                 const rows = csvText.split('\n');
                 const headers = parseCSVRow(rows[0]);
-                console.log("Headers:", headers); // Log headers for debugging
+                console.log("Headers:", headers);
                 
                 const albums = [];
                 
@@ -287,13 +414,16 @@
                     if (rows[i].trim() === '') continue;
                     
                     const values = parseCSVRow(rows[i]);
-                    if (values.length < headers.length) continue;
+                    if (values.length < 3) continue; // Need at least title, artist, year
                     
                     const album = {};
                     
                     // Map values to object properties
                     headers.forEach((header, index) => {
-                        let value = values[index] || '';
+                        let value = index < values.length ? values[index] : '';
+                        
+                        // Handle missing or empty values
+                        value = value.trim();
                         
                         // Convert "true"/"false" strings to booleans
                         if (value.toLowerCase() === 'true') {
@@ -307,21 +437,32 @@
                             value = parseInt(value, 10);
                         }
                         
+                        // Store in lowercase to standardize property access
                         album[header.toLowerCase()] = value;
                     });
                     
                     albums.push(album);
                 }
                 
-                console.log("Parsed albums:", albums.slice(0, 2)); // Log first two albums for debugging
+                console.log(`Parsed ${albums.length} albums`);
+                if (albums.length > 0) {
+                    console.log("Sample album:", albums[0]);
+                }
+                
+                // Store albums globally for filtering
+                allAlbums = albums;
+                
+                // Set up filter options
+                setupFilters(albums);
                 
                 // Display albums
                 displayAlbums(albums);
                 
-                // Hide loading state
+                // Hide loading state, show content
                 loading.style.display = 'none';
                 albumsGrid.style.display = 'grid';
                 counter.style.display = 'block';
+                filters.style.display = 'block';
                 counter.textContent = `Showing ${albums.length} records`;
                 
             } catch (err) {
@@ -344,7 +485,7 @@
                 if (char === '"') {
                     inQuotes = !inQuotes;
                 } else if (char === ',' && !inQuotes) {
-                    values.push(currentValue.trim());
+                    values.push(currentValue);
                     currentValue = '';
                 } else {
                     currentValue += char;
@@ -352,37 +493,123 @@
             }
             
             // Push the last value
-            values.push(currentValue.trim());
+            values.push(currentValue);
             
             // Clean up values (remove surrounding quotes)
-            return values.map(value => value.replace(/^"|"$/g, ''));
+            return values.map(value => {
+                value = value.trim();
+                return value.replace(/^"|"$/g, '');
+            });
+        }
+        
+        // Function to set up filter dropdowns
+        function setupFilters(albums) {
+            // Get unique values for each filter
+            const artists = [...new Set(albums.map(album => album.artist).filter(Boolean))].sort();
+            const genres = [...new Set(albums.map(album => album.genre).filter(Boolean))].sort();
+            const years = [...new Set(albums.map(album => album.year).filter(Boolean))].sort((a, b) => b - a); // Sort years in descending order
+            const categories = [...new Set(albums.map(album => album.category).filter(Boolean))].sort();
+            
+            // Populate artist dropdown
+            const artistFilter = document.getElementById('artist-filter');
+            artists.forEach(artist => {
+                const option = document.createElement('option');
+                option.value = artist;
+                option.textContent = artist;
+                artistFilter.appendChild(option);
+            });
+            
+            // Populate genre dropdown
+            const genreFilter = document.getElementById('genre-filter');
+            genres.forEach(genre => {
+                const option = document.createElement('option');
+                option.value = genre;
+                option.textContent = genre;
+                genreFilter.appendChild(option);
+            });
+            
+            // Populate year dropdown
+            const yearFilter = document.getElementById('year-filter');
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearFilter.appendChild(option);
+            });
+            
+            // Populate category dropdown
+            const categoryFilter = document.getElementById('category-filter');
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categoryFilter.appendChild(option);
+            });
+            
+            // Set up event listeners for filters
+            document.getElementById('title-filter').addEventListener('input', applyFilters);
+            document.getElementById('artist-filter').addEventListener('change', applyFilters);
+            document.getElementById('genre-filter').addEventListener('change', applyFilters);
+            document.getElementById('year-filter').addEventListener('change', applyFilters);
+            document.getElementById('category-filter').addEventListener('change', applyFilters);
+            document.getElementById('reset-filters').addEventListener('click', resetFilters);
+        }
+        
+        // Function to apply filters
+        function applyFilters() {
+            const titleFilter = document.getElementById('title-filter').value.toLowerCase();
+            const artistFilter = document.getElementById('artist-filter').value;
+            const genreFilter = document.getElementById('genre-filter').value;
+            const yearFilter = document.getElementById('year-filter').value;
+            const categoryFilter = document.getElementById('category-filter').value;
+            
+            // Filter albums based on selected criteria
+            const filteredAlbums = allAlbums.filter(album => {
+                return (
+                    (titleFilter === '' || (album.title && album.title.toLowerCase().includes(titleFilter))) &&
+                    (artistFilter === '' || album.artist === artistFilter) &&
+                    (genreFilter === '' || album.genre === genreFilter) &&
+                    (yearFilter === '' || album.year == yearFilter) && // Use == for string/number comparison
+                    (categoryFilter === '' || album.category === categoryFilter)
+                );
+            });
+            
+            // Display filtered albums
+            displayAlbums(filteredAlbums);
+            
+            // Update counter
+            document.getElementById('counter').textContent = `Showing ${filteredAlbums.length} of ${allAlbums.length} records`;
+        }
+        
+        // Function to reset filters
+        function resetFilters() {
+            document.getElementById('title-filter').value = '';
+            document.getElementById('artist-filter').value = '';
+            document.getElementById('genre-filter').value = '';
+            document.getElementById('year-filter').value = '';
+            document.getElementById('category-filter').value = '';
+            
+            // Display all albums
+            displayAlbums(allAlbums);
+            
+            // Update counter
+            document.getElementById('counter').textContent = `Showing ${allAlbums.length} records`;
         }
         
         // Function to display albums
         function displayAlbums(albums) {
             const albumsGrid = document.getElementById('albums-grid');
             
-            // Search for artwork using iTunes API if not available
-            async function getAlbumArtwork(artist, title) {
-                try {
-                    // Build a search query URL for iTunes API
-                    const query = `${encodeURIComponent(title)} ${encodeURIComponent(artist)}`;
-                    const url = `https://itunes.apple.com/search?term=${query}&media=music&entity=album&limit=1`;
-                    
-                    const response = await fetch(url);
-                    const data = await response.json();
-                    
-                    // Extract the first result's artwork URL if available
-                    if (data.results && data.results.length > 0) {
-                        // Replace the 100x100 artwork with larger version
-                        return data.results[0].artworkUrl100.replace('100x100', '600x600');
-                    }
-                    
-                    return null;
-                } catch (error) {
-                    console.error('Error fetching artwork:', error);
-                    return null;
-                }
+            // Clear existing albums
+            albumsGrid.innerHTML = '';
+            
+            // Show message if no albums match the filters
+            if (albums.length === 0) {
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.textContent = 'No albums match your filters.';
+                albumsGrid.appendChild(noResults);
+                return;
             }
             
             // Generate placeholder URL
@@ -396,15 +623,16 @@
                 const card = document.createElement('div');
                 card.className = 'album-card';
                 
+                // Make entire card clickable if Spotify URL exists
+                if (album.spotifyurl) {
+                    card.style.cursor = 'pointer';
+                    card.addEventListener('click', () => {
+                        window.open(album.spotifyurl, '_blank', 'noopener,noreferrer');
+                    });
+                }
+                
                 const imageContainer = document.createElement('div');
                 imageContainer.className = 'album-image-container';
-                
-                // Make the image container clickable if there's a spotify URL
-                if (album.spotifyurl) {
-                    imageContainer.onclick = function() {
-                        window.open(album.spotifyurl, '_blank', 'noopener,noreferrer');
-                    };
-                }
                 
                 const image = document.createElement('img');
                 image.className = 'album-image';
@@ -441,6 +669,7 @@
                     spotifyLink.rel = 'noopener noreferrer';
                     spotifyLink.innerHTML = 'S';
                     spotifyLink.title = 'Open in Spotify';
+                    spotifyLink.onclick = (e) => e.stopPropagation(); // Prevent triggering parent click
                     imageContainer.appendChild(spotifyLink);
                 }
                 
@@ -476,13 +705,9 @@
                 
                 albumsGrid.appendChild(card);
                 
-                // Attempt to get album artwork from iTunes API if not available
-                if (!album.artwork) {
-                    getAlbumArtwork(album.artist, album.title).then(artworkUrl => {
-                        if (artworkUrl) {
-                            image.src = artworkUrl;
-                        }
-                    });
+                // Log Spotify URL for debugging
+                if (album.spotifyurl) {
+                    console.log(`Album "${album.title}" has Spotify URL: ${album.spotifyurl}`);
                 }
             });
         }
