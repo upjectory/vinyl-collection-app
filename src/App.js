@@ -1,128 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import Header from './components/Header';
-import FilterControls from './components/FilterControls';
-import AlbumGrid from './components/AlbumGrid';
-import AlbumTable from './components/AlbumTable';
-import Footer from './components/Footer';
-import StatsModal from './components/StatsModal';
-import { fetchVinylData, getSavedSheetId } from './services/googleSheets';
-import config from './config';
 
 /**
- * Main App component for the Vinyl Collection application
+ * Simplified vinyl collection app that displays albums in a grid layout
  */
 function App() {
   const [albums, setAlbums] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [viewMode, setViewMode] = useState(config.defaultViewMode || 'grid'); // 'grid' or 'table'
-  const [showStatsModal, setShowStatsModal] = useState(false);
-  const [showSetupWizard, setShowSetupWizard] = useState(false);
-  
-  // State for filtering
-  const [filters, setFilters] = useState({
-    category: '',
-    artist: '',
-    title: '',
-    year: '',
-    genre: '',
-    favoritesOnly: false
-  });
 
   useEffect(() => {
     // Force dark mode
     document.documentElement.classList.add('dark');
+    document.body.style.background = '#000';
+    document.body.style.color = '#fff';
     
-    // Check if it's the first visit
-    const hasVisitedBefore = localStorage.getItem('vinylCollectionSetupComplete');
-    if (!hasVisitedBefore) {
-      setShowSetupWizard(true);
-      localStorage.setItem('vinylCollectionSetupComplete', 'true');
-    }
-    
-    loadVinylData();
+    // Load sample data
+    fetchVinylData();
   }, []);
 
-  const loadVinylData = async () => {
+  const fetchVinylData = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      // Get the saved sheet ID or use the default
-      const sheetId = getSavedSheetId();
+      // Normally we would fetch from Google Sheets, but for the demo we'll use sample data
+      const sampleData = [
+        { title: 'VocabuDrab Sessions 96-97', artist: 'B.L.X.', year: 1997, genre: 'Hip Hop' },
+        { title: 'Sunch Punch', artist: 'B.L.X.', year: 1996, genre: 'Hip Hop' },
+        { title: 'Veganz Want Beef, Vol. 1', artist: 'B.L.X.', year: 1998, genre: 'Hip Hop' },
+        { title: 'Veganz Want Beef, Vol. 2', artist: 'B.L.X.', year: 1999, genre: 'Hip Hop' },
+        { title: 'Skeletons', artist: 'Malkovich Music', year: 2005, genre: 'Electronic' },
+        { title: 'Dominoes & Dice', artist: 'CHUCK CHILLA', year: 2001, genre: 'Jazz' },
+        { title: 'Funkdafied Freddy', artist: 'IAMOMNI', year: 2002, genre: 'Funk' },
+        { title: 'Elevator Music', artist: 'Milx', year: 2010, genre: 'Ambient' },
+        { title: 'Great Expectations', artist: 'Malkovich Music', year: 2008, genre: 'Electronic' },
+        { title: 'Burgundy Brown', artist: 'IAMOMNI', year: 2004, genre: 'R&B' },
+        { title: 'Bankruptcy', artist: 'Malkovich Music', year: 2009, genre: 'Electronic' },
+        { title: 'Wolfgang', artist: 'IAMOMNI X MolMan', year: 2015, genre: 'Hip Hop' }
+      ];
       
-      const data = await fetchVinylData(sheetId);
-      setAlbums(data);
+      setAlbums(sampleData);
       setLoading(false);
     } catch (err) {
       console.error('Error loading vinyl data:', err);
-      setError('Failed to load vinyl collection data. Please check your Google Sheet ID and permissions.');
+      setError('Failed to load vinyl collection data.');
       setLoading(false);
     }
   };
 
-  const toggleViewMode = () => {
-    setViewMode(viewMode === 'grid' ? 'table' : 'grid');
-  };
-
-  const toggleStatsModal = () => {
-    setShowStatsModal(!showStatsModal);
-  };
-  
-  const handleSetupComplete = () => {
-    setShowSetupWizard(false);
-    loadVinylData();
-  };
-  
-  const openSetupWizard = () => {
-    setShowSetupWizard(true);
-  };
-
-  // Filter album data based on current filters
-  const filteredAlbums = albums.filter(album => {
-    return (
-      (filters.category === '' || album.category === filters.category) &&
-      (filters.artist === '' || (album.artist && album.artist.toLowerCase().includes(filters.artist.toLowerCase()))) &&
-      (filters.title === '' || (album.title && album.title.toLowerCase().includes(filters.title.toLowerCase()))) &&
-      (filters.year === '' || album.year === parseInt(filters.year)) &&
-      (filters.genre === '' || album.genre === filters.genre) &&
-      (!filters.favoritesOnly || album.favorite)
-    );
-  });
-
-  // Generate categories, artists, and genres for filter dropdowns
-  const categories = [...new Set(albums.filter(album => album.category).map(album => album.category))].filter(Boolean);
-  const artists = [...new Set(albums.filter(album => album.artist).map(album => album.artist))].filter(Boolean);
-  const genres = [...new Set(albums.filter(album => album.genre).map(album => album.genre))].filter(Boolean);
-
-  // Handle adding or editing notes
-  const updateAlbumNote = (albumIndex, newNote) => {
-    const updatedAlbums = [...albums];
-    updatedAlbums[albumIndex] = {
-      ...updatedAlbums[albumIndex],
-      notes: newNote
-    };
-    setAlbums(updatedAlbums);
+  // Generate a placeholder image URL
+  const getPlaceholderUrl = (title, artist) => {
+    return `https://placehold.co/400x400/121212/FFFFFF?text=${encodeURIComponent(artist)}`;
   };
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <Header 
-        toggleViewMode={toggleViewMode} 
-        viewMode={viewMode} 
-        toggleStatsModal={toggleStatsModal}
-        openSetupWizard={openSetupWizard}
-      />
+      <header className="bg-black text-white shadow-lg py-6 border-b border-gray-800">
+        <div className="container mx-auto px-4">
+          <h1 className="text-2xl md:text-3xl font-bold">
+            <span className="text-blue-400">much@</span>
+            <span className="text-green-400">moreintricate</span>
+            <span className="text-purple-400">.com</span>
+          </h1>
+        </div>
+      </header>
       
       <main className="container mx-auto px-4 py-6">
-        <FilterControls 
-          filters={filters} 
-          setFilters={setFilters} 
-          categories={categories} 
-          artists={artists} 
-          genres={genres} 
-        />
-        
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-xl">Loading your vinyl collection...</p>
@@ -130,53 +73,52 @@ function App() {
         ) : error ? (
           <div className="flex flex-col justify-center items-center h-64">
             <p className="text-red-500 mb-4">{error}</p>
-            <button
-              onClick={openSetupWizard}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
-            >
-              Setup Your Collection
-            </button>
           </div>
         ) : (
           <>
-            {viewMode === 'grid' ? (
-              <AlbumGrid albums={filteredAlbums} updateAlbumNote={updateAlbumNote} />
-            ) : (
-              <AlbumTable albums={filteredAlbums} updateAlbumNote={updateAlbumNote} />
-            )}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+              {albums.map((album, index) => (
+                <div 
+                  key={`${album.artist}-${album.title}-${index}`}
+                  className="bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300"
+                >
+                  {/* Album artwork */}
+                  <div className="relative aspect-square overflow-hidden bg-gray-900">
+                    <img 
+                      src={getPlaceholderUrl(album.title, album.artist)} 
+                      alt={`${album.title} by ${album.artist}`} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  
+                  {/* Album info */}
+                  <div className="p-3">
+                    <h3 className="font-bold text-sm truncate">{album.title}</h3>
+                    <p className="text-sm text-gray-400 truncate">{album.artist}</p>
+                    
+                    <div className="flex justify-between mt-2 text-xs text-gray-500">
+                      <span>{album.year}</span>
+                      <span>{album.genre}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
             
             <div className="mt-4 text-sm text-gray-400">
-              Showing {filteredAlbums.length} of {albums.length} records
+              Showing {albums.length} records
             </div>
           </>
         )}
       </main>
       
-      <Footer />
-      
-      {showStatsModal && (
-        <StatsModal 
-          albums={albums} 
-          onClose={toggleStatsModal} 
-        />
-      )}
-      
-      {showSetupWizard && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 rounded-lg max-w-lg w-full">
-            <h2 className="text-xl font-bold mb-4">Setup Required</h2>
-            <p className="mb-4">
-              Please set up your vinyl collection by connecting to a Google Sheet.
-            </p>
-            <button
-              onClick={handleSetupComplete}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Continue with Demo Data
-            </button>
-          </div>
+      <footer className="mt-12 py-6 bg-black border-t border-gray-800">
+        <div className="container mx-auto px-4">
+          <p className="text-sm text-gray-400">
+            &copy; {new Date().getFullYear()} Vinyl Collection App
+          </p>
         </div>
-      )}
+      </footer>
     </div>
   );
 }
