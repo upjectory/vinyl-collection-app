@@ -51,7 +51,7 @@
             background-color: #111;
             padding: 15px;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 0;
             cursor: pointer;
             transition: background-color 0.2s;
             border: 1px solid #333;
@@ -81,7 +81,7 @@
             background-color: #111;
             padding: 15px;
             border-radius: 0 0 8px 8px;
-            margin-bottom: 25px;
+            margin-bottom: 30px; /* Increased margin bottom to 30px */
             border: 1px solid #333;
             border-top: none;
             overflow: hidden;
@@ -98,6 +98,7 @@
         .filter-group {
             flex: 1;
             min-width: 180px;
+            box-sizing: border-box; /* Add box-sizing to fix layout issues */
         }
         
         .filter-label {
@@ -115,6 +116,7 @@
             border-radius: 4px;
             color: white;
             font-size: 14px;
+            box-sizing: border-box; /* Add box-sizing to prevent overflow */
         }
         
         .filter-input:focus {
@@ -140,6 +142,7 @@
             cursor: pointer;
             font-size: 14px;
             transition: background-color 0.2s;
+            width: 100%; /* Make reset button full width */
         }
         
         .filter-reset:hover {
@@ -186,6 +189,8 @@
             flex-direction: column;
             outline: 2px solid transparent;
             outline-offset: 2px;
+            text-decoration: none; /* Remove underline from anchor */
+            color: white; /* Maintain text color for anchor */
         }
         
         .album-card:hover {
@@ -199,7 +204,6 @@
             padding-bottom: 100%; /* 1:1 aspect ratio */
             background-color: #111;
             overflow: hidden;
-            cursor: pointer;
         }
         
         .album-image {
@@ -687,26 +691,28 @@
             
             // Create album cards
             albums.forEach(album => {
-                const card = document.createElement('div');
-                card.className = 'album-card';
+                // Create an anchor tag for the whole card if Spotify URL exists
+                const cardElement = album.spotifyurl ? 
+                    document.createElement('a') : 
+                    document.createElement('div');
+                
+                cardElement.className = 'album-card';
+                
+                // Set href and target for anchor elements
+                if (album.spotifyurl) {
+                    cardElement.href = album.spotifyurl;
+                    cardElement.target = '_blank';
+                    cardElement.rel = 'noopener noreferrer';
+                }
                 
                 const imageContainer = document.createElement('div');
                 imageContainer.className = 'album-image-container';
-                
-                // Make image container clickable if Spotify URL exists
-                if (album.spotifyurl) {
-                    imageContainer.style.cursor = 'pointer';
-                    imageContainer.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Prevent triggering parent click
-                        window.open(album.spotifyurl, '_blank', 'noopener,noreferrer');
-                    });
-                }
                 
                 // Improved artwork loading with better fallback
                 const image = document.createElement('img');
                 image.className = 'album-image';
                 
-                // Use iTunes API to search for album artwork if not provided
+                // Use artwork URL if provided, otherwise use placeholder
                 const artworkUrl = album.artwork || '';
                 if (artworkUrl && artworkUrl.trim() !== '') {
                     image.src = artworkUrl;
@@ -763,17 +769,13 @@
                     imageContainer.appendChild(favorite);
                 }
                 
-                // Add Spotify link if available
+                // Add Spotify icon indicator if URL is available
                 if (album.spotifyurl) {
-                    const spotifyLink = document.createElement('a');
-                    spotifyLink.className = 'spotify-link';
-                    spotifyLink.href = album.spotifyurl;
-                    spotifyLink.target = '_blank';
-                    spotifyLink.rel = 'noopener noreferrer';
-                    spotifyLink.innerHTML = 'S';
-                    spotifyLink.title = 'Open in Spotify';
-                    spotifyLink.onclick = (e) => e.stopPropagation(); // Prevent triggering parent click
-                    imageContainer.appendChild(spotifyLink);
+                    const spotifyIcon = document.createElement('div');
+                    spotifyIcon.className = 'spotify-link';
+                    spotifyIcon.innerHTML = 'S';
+                    spotifyIcon.title = 'Open in Spotify';
+                    imageContainer.appendChild(spotifyIcon);
                 }
                 
                 const info = document.createElement('div');
@@ -807,10 +809,15 @@
                 info.appendChild(artist);
                 info.appendChild(meta);
                 
-                card.appendChild(imageContainer);
-                card.appendChild(info);
+                cardElement.appendChild(imageContainer);
+                cardElement.appendChild(info);
                 
-                albumsGrid.appendChild(card);
+                albumsGrid.appendChild(cardElement);
+                
+                // Log Spotify URL for debugging
+                if (album.spotifyurl) {
+                    console.log(`Album "${album.title}" has Spotify URL: ${album.spotifyurl}`);
+                }
             });
         }
         
