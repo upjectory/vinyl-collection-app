@@ -39,11 +39,11 @@
 
     <script>
         async function fetchVinylData() {
-            // Direct URL to the published Google Sheet
-            const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQC3O5Ua6qvXZgr-GN9-7te8RwblJJdq4PNg1VqSeAG4Yb7CqFqrVDN7aM7amvpOw/pub?output=csv';
+            // Published CSV URL from Google Sheets
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQY3A57SUa4yjeK-Sto5JRK2krLUxwROG-Qd4EjDriAwlhaDYljdom9jrUqDKRUCpXiAmdLKmFqwHFa/pub?output=csv';
 
             try {
-                // Fetch as CSV
+                // Fetch CSV data
                 const response = await fetch(sheetUrl);
                 
                 // Check if fetch was successful
@@ -56,7 +56,11 @@
                 console.log('Raw CSV content:', csvText);
 
                 // Parse CSV manually
-                const rows = csvText.split('\n').map(row => row.split(','));
+                const rows = csvText.split('\n').map(row => {
+                    // Use regex to properly split CSV with potential commas in fields
+                    return row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+                });
+
                 const headers = rows[0];
                 
                 const vinylGrid = document.getElementById('vinyl-grid');
@@ -73,11 +77,14 @@
                     // Skip empty rows
                     if (row.length < 4) continue;
 
+                    // Remove quotes if present
+                    const cleanValue = (val) => val ? val.replace(/^"|"$/g, '').trim() : 'Unknown';
+
                     const vinylData = {
-                        Album: row[0] || 'Unknown Album',
-                        Artist: row[1] || 'Unknown Artist',
-                        Year: row[2] || 'Unknown Year',
-                        Genre: row[3] || 'Unknown Genre'
+                        Album: cleanValue(row[0]),
+                        Artist: cleanValue(row[1]),
+                        Year: cleanValue(row[2]),
+                        Genre: cleanValue(row[3])
                     };
 
                     const vinylCard = document.createElement('div');
@@ -113,13 +120,13 @@
                 console.error('Error fetching vinyl data:', error);
                 
                 const loading = document.getElementById('loading');
-                const error = document.getElementById('error');
+                const errorDiv = document.getElementById('error');
                 
                 // Update error message with specific error
-                error.textContent = `Error: ${error.message}. Check console for details.`;
+                errorDiv.textContent = `Error: ${error.message}. Check console for details.`;
                 
                 loading.classList.add('hidden');
-                error.classList.remove('hidden');
+                errorDiv.classList.remove('hidden');
             }
         }
 
