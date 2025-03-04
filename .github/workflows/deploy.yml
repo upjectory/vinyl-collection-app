@@ -1,4 +1,4 @@
-name: Deploy React App to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   # Runs on pushes targeting the default branch
@@ -20,7 +20,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
+  deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -29,30 +29,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      
-      - name: Clean Install Dependencies
-        run: npm ci
-      
-      - name: Install Missing Dependencies
-        run: npm install autoprefixer
-      
-      - name: Build
-        run: npm run build
-        env:
-          CI: false
-      
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload the build folder
-          path: './build'
+          # Upload entire repository
+          path: '.'
       
       - name: Deploy to GitHub Pages
         id: deployment
