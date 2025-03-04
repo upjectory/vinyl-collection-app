@@ -2,13 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Apply dark mode by default */
+:root {
+  color-scheme: dark;
+}
+
+html {
+  @apply dark;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  @apply bg-black text-white;
 }
 
 code {
@@ -16,24 +26,53 @@ code {
     monospace;
 }
 
-/* Custom Styles */
+/* Album card hover effects */
+.album-card {
+  transition: all 0.3s ease;
+}
+
+.album-card:hover {
+  transform: translateY(-5px);
+  @apply shadow-vinyl-hover;
+}
+
+/* Album artwork hover zoom effect */
+.album-artwork {
+  transition: transform 0.3s ease;
+}
+
+.album-card:hover .album-artwork {
+  transform: scale(1.05);
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-700 rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-600;
+}
+
+/* Make album grid responsive */
 .album-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 1.5rem;
 }
 
 @media (max-width: 640px) {
   .album-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 1rem;
-  }
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #111827;
-    color: #F9FAFB;
   }
 }
