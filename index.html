@@ -51,7 +51,7 @@
             background-color: #111;
             padding: 15px;
             border-radius: 8px;
-            margin-bottom: 0;
+            margin-bottom: 20px; /* Added 20px margin bottom */
             cursor: pointer;
             transition: background-color 0.2s;
             border: 1px solid #333;
@@ -191,6 +191,7 @@
             outline-offset: 2px;
             text-decoration: none; /* Remove underline from anchor */
             color: white; /* Maintain text color for anchor */
+            cursor: pointer; /* Add cursor pointer to all cards */
         }
         
         .album-card:hover {
@@ -691,18 +692,15 @@
             
             // Create album cards
             albums.forEach(album => {
-                // Create an anchor tag for the whole card if Spotify URL exists
-                const cardElement = album.spotifyurl ? 
-                    document.createElement('a') : 
-                    document.createElement('div');
+                // Create the card div first
+                const card = document.createElement('div');
+                card.className = 'album-card';
                 
-                cardElement.className = 'album-card';
-                
-                // Set href and target for anchor elements
-                if (album.spotifyurl) {
-                    cardElement.href = album.spotifyurl;
-                    cardElement.target = '_blank';
-                    cardElement.rel = 'noopener noreferrer';
+                // Add click event to open Spotify URL if it exists
+                if (album.spotifyurl && album.spotifyurl.trim() !== '') {
+                    card.addEventListener('click', function() {
+                        window.open(album.spotifyurl, '_blank');
+                    });
                 }
                 
                 const imageContainer = document.createElement('div');
@@ -770,12 +768,15 @@
                 }
                 
                 // Add Spotify icon indicator if URL is available
-                if (album.spotifyurl) {
+                if (album.spotifyurl && album.spotifyurl.trim() !== '') {
                     const spotifyIcon = document.createElement('div');
                     spotifyIcon.className = 'spotify-link';
                     spotifyIcon.innerHTML = 'S';
                     spotifyIcon.title = 'Open in Spotify';
                     imageContainer.appendChild(spotifyIcon);
+                    
+                    // Debug output
+                    console.log(`Album "${album.title}" by ${album.artist} has Spotify URL: ${album.spotifyurl}`);
                 }
                 
                 const info = document.createElement('div');
@@ -809,15 +810,10 @@
                 info.appendChild(artist);
                 info.appendChild(meta);
                 
-                cardElement.appendChild(imageContainer);
-                cardElement.appendChild(info);
+                card.appendChild(imageContainer);
+                card.appendChild(info);
                 
-                albumsGrid.appendChild(cardElement);
-                
-                // Log Spotify URL for debugging
-                if (album.spotifyurl) {
-                    console.log(`Album "${album.title}" has Spotify URL: ${album.spotifyurl}`);
-                }
+                albumsGrid.appendChild(card);
             });
         }
         
