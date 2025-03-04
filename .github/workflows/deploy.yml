@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+# Add this permissions section
+permissions:
+  contents: write
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -12,8 +16,31 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
 
-      - name: Deploy Static Files Directly 🚀
+      - name: Setup Node.js 🔧
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          
+      - name: Create React App from Scratch
+        run: |
+          npx create-react-app .temp --template cra-template
+          cp -r .temp/node_modules ./
+          rm -rf .temp
+          
+      - name: Install Additional Dependencies
+        run: |
+          npm install --save axios react-icons
+          npm install --save-dev tailwindcss postcss autoprefixer gh-pages
+          
+      - name: Initialize Tailwind
+        run: |
+          npx tailwindcss init -p
+          
+      - name: Build 🏗️
+        run: npm run build
+
+      - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: public # Just deploy the public folder as-is
-          branch: gh-pages
+          folder: build # The folder the action should deploy
+          branch: gh-pages # The branch the action should deploy to
