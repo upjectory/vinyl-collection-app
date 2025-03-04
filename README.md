@@ -1,31 +1,46 @@
-# Vinyl Collection Website
+# Vinyl Collection Viewer
 
-## Overview
-This website displays a vinyl record collection pulled directly from a Google Sheet. 
+## Project Overview
+A dynamic web application that displays a vinyl record collection pulled from a Google Sheet. Users can easily customize and deploy their own collection.
 
-## Features
+## Key Features
+- Fetch album data dynamically from a Google Sheet
+- Display album artwork, details, and Spotify links
+- Easy to fork or download for personal use
+- Simple deployment to GitHub Pages
+
+## Quick Start
+
+### Option 1: Local Usage
+1. Download `index.html`
+2. Update the Google Sheet source URL in the script
+3. Open the file in a web browser
+
+### Option 2: GitHub Pages Deployment
+1. Fork this repository
+2. Update the Google Sheet source URL in the script
+3. Enable GitHub Pages in repository settings
+
+## Configuration
+Modify the Google Sheet source URL in the main script to point to your personal collection spreadsheet.
+
+### Required Google Sheet Columns
+- title
+- artist
+- year
+- genre
+- artwork
+- spotifyurl
+- favorite (optional)
+
+## Technical Details
+- Built with vanilla JavaScript
+- Pulls data from Google Sheets API
 - Responsive design
-- Dynamic data loading from Google Sheets
-- Grid layout with hover effects
-- Mobile-friendly interface
+- No build step required
 
-## Data Source
-The vinyl collection data is sourced from a Google Sheet. Ensure the sheet is:
-- Publicly accessible
-- Contains columns: Album, Artist, Year, Genre
-- First row is used as headers
+## Contributing
+Feel free to open issues or submit pull requests to improve the project.
 
-## Deployment
-The site is automatically deployed to GitHub Pages using GitHub Actions.
-
-### Customization
-- Modify the `index.html` file to change styling or data display
-- Update the Google Sheet URL in the JavaScript to use your own sheet
-
-## Troubleshooting
-- Check browser console for any errors
-- Verify Google Sheet sharing settings
-- Ensure column names match the script expectations
-
-## Local Development
-Simply open the `index.html` file in a web browser to view the collection.
+## License
+[Specify your license here]
