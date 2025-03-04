@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 const AlbumCard = ({ album }) => {
   const { 
@@ -11,42 +11,20 @@ const AlbumCard = ({ album }) => {
     favorite 
   } = album;
 
-  useEffect(() => {
-    console.group(`Album Details: ${title}`);
-    console.log('Full Album Object:', album);
-    console.log('Spotify URL:', spotifyurl);
-    console.log('Artwork URL:', artwork);
-    console.log('Is Favorite:', favorite);
-    console.groupEnd();
-  }, [album]);
-
-  const handleSpotifyClick = () => {
-    console.log(`Attempting to open Spotify URL for ${title}`);
-    if (spotifyurl) {
-      window.open(spotifyurl, '_blank');
-    } else {
-      console.warn(`No Spotify URL found for album: ${title}`);
-    }
-  };
-
   return (
-    <div 
-      className="album-card" 
-      onClick={handleSpotifyClick}
-    >
-      <div className="album-image-container">
+    <div className="album-card">
+      <a 
+        href={spotifyurl || '#'} 
+        target="_blank" 
+        rel="noopener noreferrer"
+        className="album-artwork-link"
+      >
         <img 
           src={artwork} 
           alt={`${title} by ${artist}`} 
           className="album-image"
         />
-        {spotifyurl && (
-          <div className="spotify-link" title="Open in Spotify">S</div>
-        )}
-        {favorite && (
-          <div className="album-favorite">★</div>
-        )}
-      </div>
+      </a>
       <div className="album-details">
         <h3>{title}</h3>
         <p>{artist}</p>
