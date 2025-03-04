@@ -3,135 +3,400 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Vinyl Collection</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Vinyl Collection</title>
     <style>
+        /* Base styles */
+        :root {
+            color-scheme: dark;
+        }
+        
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+            line-height: 1.5;
         }
-        .vinyl-card {
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        
+        /* Container */
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 15px;
         }
-        .vinyl-card:hover {
-            transform: scale(1.03);
-            box-shadow: 0 10px 15px rgba(0,0,0,0.15);
+        
+        /* Header */
+        header {
+            background-color: #000;
+            border-bottom: 1px solid #333;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+        
+        .site-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0;
+        }
+        
+        .site-title .blue { color: #60A5FA; }
+        .site-title .green { color: #34D399; }
+        .site-title .purple { color: #A78BFA; }
+        
+        /* Loading state */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 18px;
+            color: #aaa;
+        }
+        
+        /* Error message */
+        .error {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        /* Albums grid */
+        .albums-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        /* Album card */
+        .album-card {
+            background-color: #1f1f1f;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .album-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .album-image-container {
+            position: relative;
+            padding-bottom: 100%; /* 1:1 aspect ratio */
+            background-color: #111;
+            overflow: hidden;
+        }
+        
+        .album-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .album-card:hover .album-image {
+            transform: scale(1.05);
+        }
+        
+        .album-category {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .album-favorite {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            color: #fbbf24;
+        }
+        
+        .album-info {
+            padding: 12px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .album-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin: 0 0 4px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .album-artist {
+            font-size: 14px;
+            color: #9ca3af;
+            margin: 0 0 8px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .album-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: auto;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #000;
+            border-top: 1px solid #333;
+            padding: 20px 0;
+            margin-top: 40px;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+        
+        .counter {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .albums-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 15px;
+            }
+            
+            .site-title {
+                font-size: 24px;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen p-6">
-    <div class="container mx-auto">
-        <h1 class="text-4xl font-bold text-center mb-10 text-gray-800">My Vinyl Collection</h1>
-        
-        <div id="loading" class="text-center text-xl text-gray-600">
-            Loading vinyl collection...
+<body>
+    <header>
+        <div class="container">
+            <h1 class="site-title">
+                <span class="blue">much@</span><span class="green">moreintricate</span><span class="purple">.com</span>
+            </h1>
         </div>
-        
-        <div id="vinyl-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 hidden">
-            <!-- Vinyl records will be dynamically inserted here -->
+    </header>
+    
+    <main class="container">
+        <div id="loading" class="loading">Loading vinyl collection...</div>
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="albums-grid" class="albums-grid" style="display: none;"></div>
+        <div id="counter" class="counter" style="display: none;"></div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> Vinyl Collection App</p>
         </div>
-        
-        <div id="error" class="text-center text-red-500 hidden">
-            Error loading vinyl collection. Please try again later.
-        </div>
-    </div>
-
+    </footer>
+    
     <script>
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+        
+        // Function to fetch data from Google Sheets
         async function fetchVinylData() {
-            // Published CSV URL from Google Sheets
-            const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQY3A57SUa4yjeK-Sto5JRK2krLUxwROG-Qd4EjDriAwlhaDYljdom9jrUqDKRUCpXiAmdLKmFqwHFa/pub?output=csv';
-
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const albumsGrid = document.getElementById('albums-grid');
+            const counter = document.getElementById('counter');
+            
             try {
-                // Fetch CSV data
+                // Published CSV URL from Google Sheets
+                const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQY3A57SUa4yjeK-Sto5JRK2krLUxwROG-Qd4EjDriAwlhaDYljdom9jrUqDKRUCpXiAmdLKmFqwHFa/pub?output=csv';
+                
+                // Fetch the CSV data
                 const response = await fetch(sheetUrl);
                 
-                // Check if fetch was successful
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error(`Failed to fetch data: ${response.status} ${response.statusText}`);
                 }
                 
-                // Get text content
                 const csvText = await response.text();
-                console.log('Raw CSV content:', csvText);
-
+                
                 // Parse CSV manually
-                const rows = csvText.split('\n').map(row => {
-                    // Use regex to properly split CSV with potential commas in fields
-                    return row.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
-                });
-
-                const headers = rows[0];
+                const rows = csvText.split('\n');
+                const headers = parseCSVRow(rows[0]);
                 
-                const vinylGrid = document.getElementById('vinyl-grid');
-                const loading = document.getElementById('loading');
+                const albums = [];
                 
-                // Clear loading, show grid
-                loading.classList.add('hidden');
-                vinylGrid.classList.remove('hidden');
-
-                // Skip header row (index 0)
+                // Parse each row
                 for (let i = 1; i < rows.length; i++) {
-                    const row = rows[i];
+                    if (rows[i].trim() === '') continue;
                     
-                    // Skip empty rows
-                    if (row.length < 4) continue;
-
-                    // Remove quotes if present
-                    const cleanValue = (val) => val ? val.replace(/^"|"$/g, '').trim() : 'Unknown';
-
-                    const vinylData = {
-                        Album: cleanValue(row[0]),
-                        Artist: cleanValue(row[1]),
-                        Year: cleanValue(row[2]),
-                        Genre: cleanValue(row[3])
-                    };
-
-                    const vinylCard = document.createElement('div');
-                    vinylCard.classList.add(
-                        'vinyl-card', 
-                        'bg-white', 
-                        'rounded-lg', 
-                        'overflow-hidden', 
-                        'border', 
-                        'border-gray-200', 
-                        'p-4'
-                    );
+                    const values = parseCSVRow(rows[i]);
+                    if (values.length < headers.length) continue;
                     
-                    vinylCard.innerHTML = `
-                        <div class="text-center">
-                            <h2 class="text-xl font-semibold text-gray-800 mb-2">${vinylData.Album}</h2>
-                            <p class="text-gray-600 mb-1">${vinylData.Artist}</p>
-                            <div class="flex justify-between text-sm text-gray-500 mt-2">
-                                <span>${vinylData.Year}</span>
-                                <span>${vinylData.Genre}</span>
-                            </div>
-                        </div>
-                    `;
-
-                    vinylGrid.appendChild(vinylCard);
+                    const album = {};
+                    
+                    // Map values to object properties
+                    headers.forEach((header, index) => {
+                        let value = values[index] || '';
+                        
+                        // Convert "true"/"false" strings to booleans
+                        if (value.toLowerCase() === 'true') {
+                            value = true;
+                        } else if (value.toLowerCase() === 'false') {
+                            value = false;
+                        }
+                        
+                        // Convert numeric strings to numbers
+                        if (header === 'Year' && !isNaN(value)) {
+                            value = parseInt(value, 10);
+                        }
+                        
+                        album[header.toLowerCase()] = value;
+                    });
+                    
+                    albums.push(album);
                 }
-
-                // If no records found
-                if (vinylGrid.children.length === 0) {
-                    throw new Error('No vinyl records found in the spreadsheet');
-                }
-            } catch (error) {
-                console.error('Error fetching vinyl data:', error);
                 
-                const loading = document.getElementById('loading');
-                const errorDiv = document.getElementById('error');
+                // Display albums
+                displayAlbums(albums);
                 
-                // Update error message with specific error
-                errorDiv.textContent = `Error: ${error.message}. Check console for details.`;
+                // Hide loading state
+                loading.style.display = 'none';
+                albumsGrid.style.display = 'grid';
+                counter.style.display = 'block';
+                counter.textContent = `Showing ${albums.length} records`;
                 
-                loading.classList.add('hidden');
-                errorDiv.classList.remove('hidden');
+            } catch (err) {
+                console.error('Error fetching vinyl data:', err);
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.textContent = `Error: ${err.message}. Please try again later.`;
             }
         }
-
-        // Load vinyl data when the page loads
-        fetchVinylData();
+        
+        // Helper function to parse CSV row properly
+        function parseCSVRow(row) {
+            const values = [];
+            let inQuotes = false;
+            let currentValue = '';
+            
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    values.push(currentValue.trim());
+                    currentValue = '';
+                } else {
+                    currentValue += char;
+                }
+            }
+            
+            // Push the last value
+            values.push(currentValue.trim());
+            
+            // Clean up values (remove surrounding quotes)
+            return values.map(value => value.replace(/^"|"$/g, ''));
+        }
+        
+        // Function to display albums
+        function displayAlbums(albums) {
+            const albumsGrid = document.getElementById('albums-grid');
+            
+            // Generate placeholder URL
+            function getPlaceholderUrl(title, artist) {
+                const encodedText = encodeURIComponent((artist || 'Album').substring(0, 10));
+                return `https://placehold.co/400x400/121212/FFFFFF?text=${encodedText}`;
+            }
+            
+            // Create album cards
+            albums.forEach(album => {
+                const card = document.createElement('div');
+                card.className = 'album-card';
+                
+                const imageContainer = document.createElement('div');
+                imageContainer.className = 'album-image-container';
+                
+                const image = document.createElement('img');
+                image.className = 'album-image';
+                image.src = album.artwork || getPlaceholderUrl(album.title, album.artist);
+                image.alt = `${album.title} by ${album.artist}`;
+                image.onerror = function() {
+                    this.src = getPlaceholderUrl(album.title, album.artist);
+                };
+                
+                imageContainer.appendChild(image);
+                
+                // Add category tag if present
+                if (album.category) {
+                    const category = document.createElement('div');
+                    category.className = 'album-category';
+                    category.textContent = album.category;
+                    imageContainer.appendChild(category);
+                }
+                
+                // Add favorite indicator if true
+                if (album.favorite) {
+                    const favorite = document.createElement('div');
+                    favorite.className = 'album-favorite';
+                    favorite.innerHTML = '★';
+                    imageContainer.appendChild(favorite);
+                }
+                
+                const info = document.createElement('div');
+                info.className = 'album-info';
+                
+                const title = document.createElement('h3');
+                title.className = 'album-title';
+                title.textContent = album.title || 'Unknown Title';
+                
+                const artist = document.createElement('p');
+                artist.className = 'album-artist';
+                artist.textContent = album.artist || 'Unknown Artist';
+                
+                const meta = document.createElement('div');
+                meta.className = 'album-meta';
+                
+                const year = document.createElement('span');
+                year.textContent = album.year || '';
+                
+                const genre = document.createElement('span');
+                genre.textContent = album.genre || '';
+                
+                meta.appendChild(year);
+                meta.appendChild(genre);
+                
+                info.appendChild(title);
+                info.appendChild(artist);
+                info.appendChild(meta);
+                
+                card.appendChild(imageContainer);
+                card.appendChild(info);
+                
+                albumsGrid.appendChild(card);
+            });
+        }
+        
+        // Load data when the page loads
+        document.addEventListener('DOMContentLoaded', fetchVinylData);
     </script>
 </body>
 </html>
