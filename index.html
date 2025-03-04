@@ -95,6 +95,19 @@
             padding-bottom: 100%; /* 1:1 aspect ratio */
             background-color: #111;
             overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .album-image-container:hover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 3px solid #34D399;
+            border-radius: 4px;
+            pointer-events: none;
         }
         
         .album-image {
@@ -120,6 +133,7 @@
             font-size: 12px;
             padding: 4px 8px;
             border-radius: 4px;
+            z-index: 1;
         }
         
         .album-favorite {
@@ -127,6 +141,7 @@
             top: 8px;
             left: 8px;
             color: #fbbf24;
+            z-index: 1;
         }
         
         .spotify-link {
@@ -144,6 +159,7 @@
             text-decoration: none;
             font-weight: bold;
             transition: transform 0.2s ease;
+            z-index: 1;
         }
         
         .spotify-link:hover {
@@ -257,10 +273,12 @@
                 }
                 
                 const csvText = await response.text();
+                console.log("CSV data:", csvText.substring(0, 500)); // Log the first 500 chars for debugging
                 
                 // Parse CSV manually
                 const rows = csvText.split('\n');
                 const headers = parseCSVRow(rows[0]);
+                console.log("Headers:", headers); // Log headers for debugging
                 
                 const albums = [];
                 
@@ -285,7 +303,7 @@
                         }
                         
                         // Convert numeric strings to numbers
-                        if (header === 'Year' && !isNaN(value)) {
+                        if (header.toLowerCase() === 'year' && !isNaN(value)) {
                             value = parseInt(value, 10);
                         }
                         
@@ -294,6 +312,8 @@
                     
                     albums.push(album);
                 }
+                
+                console.log("Parsed albums:", albums.slice(0, 2)); // Log first two albums for debugging
                 
                 // Display albums
                 displayAlbums(albums);
@@ -342,10 +362,10 @@
         function displayAlbums(albums) {
             const albumsGrid = document.getElementById('albums-grid');
             
-            // Search for Spotify image if not available
-            async function getSpotifyImage(artist, title) {
+            // Search for artwork using iTunes API if not available
+            async function getAlbumArtwork(artist, title) {
                 try {
-                    // Build a search query URL for Spotify Web API
+                    // Build a search query URL for iTunes API
                     const query = `${encodeURIComponent(title)} ${encodeURIComponent(artist)}`;
                     const url = `https://itunes.apple.com/search?term=${query}&media=music&entity=album&limit=1`;
                     
@@ -378,6 +398,13 @@
                 
                 const imageContainer = document.createElement('div');
                 imageContainer.className = 'album-image-container';
+                
+                // Make the image container clickable if there's a spotify URL
+                if (album.spotifyurl) {
+                    imageContainer.onclick = function() {
+                        window.open(album.spotifyurl, '_blank', 'noopener,noreferrer');
+                    };
+                }
                 
                 const image = document.createElement('img');
                 image.className = 'album-image';
@@ -451,7 +478,7 @@
                 
                 // Attempt to get album artwork from iTunes API if not available
                 if (!album.artwork) {
-                    getSpotifyImage(album.artist, album.title).then(artworkUrl => {
+                    getAlbumArtwork(album.artist, album.title).then(artworkUrl => {
                         if (artworkUrl) {
                             image.src = artworkUrl;
                         }
