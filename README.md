@@ -1,30 +1,31 @@
-# Vinyl Collection App
+# Vinyl Collection Website
 
 ## Overview
-This is a web application to display a vinyl record collection using data from a Google Sheet.
+This website displays a vinyl record collection pulled directly from a Google Sheet. 
 
-## Deployment
-
-### GitHub Pages Setup
-1. Go to your repository settings
-2. Navigate to "Pages" section
-3. Under "Build and deployment", select "GitHub Actions" as the source
-4. The workflow in `.github/workflows/deploy.yml` will handle deployment
-
-### Local Development
-- Open `public/index.html` directly in a browser
-- The app pulls data from a Google Sheet dynamically
+## Features
+- Responsive design
+- Dynamic data loading from Google Sheets
+- Grid layout with hover effects
+- Mobile-friendly interface
 
 ## Data Source
-The vinyl collection data is sourced from a Google Sheet. Ensure the sheet is published and accessible.
+The vinyl collection data is sourced from a Google Sheet. Ensure the sheet is:
+- Publicly accessible
+- Contains columns: Album, Artist, Year, Genre
+- First row is used as headers
+
+## Deployment
+The site is automatically deployed to GitHub Pages using GitHub Actions.
 
 ### Customization
-- Modify the `fetchVinylData()` function in `index.html` to match your Google Sheet structure
-- Adjust the grid layout and styling in the HTML file
+- Modify the `index.html` file to change styling or data display
+- Update the Google Sheet URL in the JavaScript to use your own sheet
 
 ## Troubleshooting
-- Verify that the Google Sheet is publicly accessible
 - Check browser console for any errors
-- Ensure your sheet follows the expected format:
-  - Column headers: Album, Artist, Year, Genre
-  - First row is expected to be headers
+- Verify Google Sheet sharing settings
+- Ensure column names match the script expectations
+
+## Local Development
+Simply open the `index.html` file in a web browser to view the collection.
