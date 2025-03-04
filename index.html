@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vinyl Collection</title>
+    <title>My Vinyl Collection</title>
     <style>
         /* Base styles */
         :root {
@@ -129,6 +129,27 @@
             color: #fbbf24;
         }
         
+        .spotify-link {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background-color: #1DB954;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-weight: bold;
+            transition: transform 0.2s ease;
+        }
+        
+        .spotify-link:hover {
+            transform: scale(1.1);
+        }
+        
         .album-info {
             padding: 12px;
             flex-grow: 1;
@@ -195,7 +216,7 @@
     <header>
         <div class="container">
             <h1 class="site-title">
-                <span class="blue">much@</span><span class="green">moreintricate</span><span class="purple">.com</span>
+                My Vinyl Collection
             </h1>
         </div>
     </header>
@@ -209,7 +230,7 @@
     
     <footer>
         <div class="container">
-            <p>&copy; <span id="current-year"></span> Vinyl Collection App</p>
+            <p>&copy; <span id="current-year"></span> My Vinyl Collection</p>
         </div>
     </footer>
     
@@ -321,6 +342,29 @@
         function displayAlbums(albums) {
             const albumsGrid = document.getElementById('albums-grid');
             
+            // Search for Spotify image if not available
+            async function getSpotifyImage(artist, title) {
+                try {
+                    // Build a search query URL for Spotify Web API
+                    const query = `${encodeURIComponent(title)} ${encodeURIComponent(artist)}`;
+                    const url = `https://itunes.apple.com/search?term=${query}&media=music&entity=album&limit=1`;
+                    
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    
+                    // Extract the first result's artwork URL if available
+                    if (data.results && data.results.length > 0) {
+                        // Replace the 100x100 artwork with larger version
+                        return data.results[0].artworkUrl100.replace('100x100', '600x600');
+                    }
+                    
+                    return null;
+                } catch (error) {
+                    console.error('Error fetching artwork:', error);
+                    return null;
+                }
+            }
+            
             // Generate placeholder URL
             function getPlaceholderUrl(title, artist) {
                 const encodedText = encodeURIComponent((artist || 'Album').substring(0, 10));
@@ -361,6 +405,18 @@
                     imageContainer.appendChild(favorite);
                 }
                 
+                // Add Spotify link if available
+                if (album.spotifyurl) {
+                    const spotifyLink = document.createElement('a');
+                    spotifyLink.className = 'spotify-link';
+                    spotifyLink.href = album.spotifyurl;
+                    spotifyLink.target = '_blank';
+                    spotifyLink.rel = 'noopener noreferrer';
+                    spotifyLink.innerHTML = 'S';
+                    spotifyLink.title = 'Open in Spotify';
+                    imageContainer.appendChild(spotifyLink);
+                }
+                
                 const info = document.createElement('div');
                 info.className = 'album-info';
                 
@@ -392,6 +448,15 @@
                 card.appendChild(info);
                 
                 albumsGrid.appendChild(card);
+                
+                // Attempt to get album artwork from iTunes API if not available
+                if (!album.artwork) {
+                    getSpotifyImage(album.artist, album.title).then(artworkUrl => {
+                        if (artworkUrl) {
+                            image.src = artworkUrl;
+                        }
+                    });
+                }
             });
         }
         
