@@ -39,29 +39,26 @@
 
     <script>
         async function fetchVinylData() {
-            // Update this to use the full public sharing URL
-            const sheetUrl = 'https://docs.google.com/spreadsheets/d/1xAzo6vCafjT6XekXP-nmN_gapEfnvyCjyyk4ZPo1K3I/pub?output=csv';
+            // Direct URL to the published Google Sheet
+            const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQC3O5Ua6qvXZgr-GN9-7te8RwblJJdq4PNg1VqSeAG4Yb7CqFqrVDN7aM7amvpOw/pub?output=csv';
 
             try {
-                // Fetch as CSV instead of JSON
+                // Fetch as CSV
                 const response = await fetch(sheetUrl);
                 
+                // Check if fetch was successful
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
+                // Get text content
                 const csvText = await response.text();
-                console.log('Raw CSV data:', csvText);
+                console.log('Raw CSV content:', csvText);
 
-                // Use PapaParse to parse CSV
-                const Papa = await import('https://cdn.jsdelivr.net/npm/papaparse@5.4.1/+esm');
-                const parsedData = Papa.parse(csvText, {
-                    header: true,
-                    skipEmptyLines: true
-                });
-
-                console.log('Parsed data:', parsedData);
-
+                // Parse CSV manually
+                const rows = csvText.split('\n').map(row => row.split(','));
+                const headers = rows[0];
+                
                 const vinylGrid = document.getElementById('vinyl-grid');
                 const loading = document.getElementById('loading');
                 
@@ -69,8 +66,20 @@
                 loading.classList.add('hidden');
                 vinylGrid.classList.remove('hidden');
 
-                // Render vinyl records
-                parsedData.data.forEach(vinylData => {
+                // Skip header row (index 0)
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    
+                    // Skip empty rows
+                    if (row.length < 4) continue;
+
+                    const vinylData = {
+                        Album: row[0] || 'Unknown Album',
+                        Artist: row[1] || 'Unknown Artist',
+                        Year: row[2] || 'Unknown Year',
+                        Genre: row[3] || 'Unknown Genre'
+                    };
+
                     const vinylCard = document.createElement('div');
                     vinylCard.classList.add(
                         'vinyl-card', 
@@ -84,34 +93,33 @@
                     
                     vinylCard.innerHTML = `
                         <div class="text-center">
-                            <h2 class="text-xl font-semibold text-gray-800 mb-2">${vinylData['Album'] || 'Unknown Album'}</h2>
-                            <p class="text-gray-600 mb-1">${vinylData['Artist'] || 'Unknown Artist'}</p>
+                            <h2 class="text-xl font-semibold text-gray-800 mb-2">${vinylData.Album}</h2>
+                            <p class="text-gray-600 mb-1">${vinylData.Artist}</p>
                             <div class="flex justify-between text-sm text-gray-500 mt-2">
-                                <span>${vinylData['Year'] || 'N/A'}</span>
-                                <span>${vinylData['Genre'] || 'N/A'}</span>
+                                <span>${vinylData.Year}</span>
+                                <span>${vinylData.Genre}</span>
                             </div>
                         </div>
                     `;
 
                     vinylGrid.appendChild(vinylCard);
-                });
+                }
 
                 // If no records found
-                if (parsedData.data.length === 0) {
-                    const noRecords = document.createElement('p');
-                    noRecords.classList.add('text-center', 'text-gray-500', 'col-span-full');
-                    noRecords.textContent = 'No vinyl records found.';
-                    vinylGrid.appendChild(noRecords);
+                if (vinylGrid.children.length === 0) {
+                    throw new Error('No vinyl records found in the spreadsheet');
                 }
             } catch (error) {
-                console.error('Detailed error fetching vinyl data:', error);
+                console.error('Error fetching vinyl data:', error);
                 
                 const loading = document.getElementById('loading');
                 const error = document.getElementById('error');
                 
+                // Update error message with specific error
+                error.textContent = `Error: ${error.message}. Check console for details.`;
+                
                 loading.classList.add('hidden');
                 error.classList.remove('hidden');
-                error.textContent = `Error: ${error.message}. Check console for details.`;
             }
         }
 
