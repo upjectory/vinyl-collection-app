@@ -12,13 +12,27 @@ const AlbumCard = ({ album }) => {
   } = album;
 
   useEffect(() => {
-    console.log(`Album "${title}" Spotify URL:`, spotifyurl);
-  }, [spotifyurl]);
+    console.group(`Album Details: ${title}`);
+    console.log('Full Album Object:', album);
+    console.log('Spotify URL:', spotifyurl);
+    console.log('Artwork URL:', artwork);
+    console.log('Is Favorite:', favorite);
+    console.groupEnd();
+  }, [album]);
+
+  const handleSpotifyClick = () => {
+    console.log(`Attempting to open Spotify URL for ${title}`);
+    if (spotifyurl) {
+      window.open(spotifyurl, '_blank');
+    } else {
+      console.warn(`No Spotify URL found for album: ${title}`);
+    }
+  };
 
   return (
     <div 
       className="album-card" 
-      onClick={spotifyurl ? () => window.open(spotifyurl, '_blank') : undefined}
+      onClick={handleSpotifyClick}
     >
       <div className="album-image-container">
         <img 
