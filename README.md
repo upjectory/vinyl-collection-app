@@ -14,6 +14,10 @@ A dynamic web application to display and manage your vinyl record collection, pu
 - 🔄 Data syncs directly from your Google Sheet
 - 🎨 Album artwork and Spotify links support
 
+## Demo
+
+Check out the live demo: [https://upjectory.github.io/vinyl-collection-app/](https://upjectory.github.io/vinyl-collection-app/)
+
 ## Setup and Usage
 
 ### Option 1: Use the Live Demo
