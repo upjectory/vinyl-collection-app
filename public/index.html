@@ -1,20 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Vinyl Collection App - Display and manage your vinyl records"
-    />
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <title>Vinyl Collection</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Vinyl Collection</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .vinyl-card {
+            transition: transform 0.3s ease;
+        }
+        .vinyl-card:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="container mx-auto">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">My Vinyl Collection</h1>
+        <div id="vinyl-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <!-- Vinyl records will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <script>
+        async function fetchVinylData() {
+            const sheetId = '1xAzo6vCafjT6XekXP-nmN_gapEfnvyCjyyk4ZPo1K3I';
+            const sheetName = 'Sheet1';
+            const url = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${sheetName}`;
+
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+                // Remove unnecessary prefix and suffix
+                const jsonText = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+                const data = JSON.parse(jsonText);
+
+                const rows = data.table.rows;
+                const headers = data.table.cols.map(col => col.label);
+
+                const vinylGrid = document.getElementById('vinyl-grid');
+                
+                // Skip the header row
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i].c;
+                    const vinylData = {};
+                    headers.forEach((header, index) => {
+                        vinylData[header] = row[index] ? row[index].v : 'N/A';
+                    });
+
+                    const vinylCard = document.createElement('div');
+                    vinylCard.classList.add('vinyl-card', 'bg-white', 'rounded-lg', 'shadow-md', 'p-4', 'text-center');
+                    
+                    vinylCard.innerHTML = `
+                        <h2 class="text-xl font-semibold mb-2">${vinylData['Album']}</h2>
+                        <p class="text-gray-600 mb-1">${vinylData['Artist']}</p>
+                        <p class="text-gray-500 text-sm">${vinylData['Year']}</p>
+                        <p class="text-gray-500 text-sm mt-2">${vinylData['Genre']}</p>
+                    `;
+
+                    vinylGrid.appendChild(vinylCard);
+                }
+            } catch (error) {
+                console.error('Error fetching vinyl data:', error);
+                const vinylGrid = document.getElementById('vinyl-grid');
+                vinylGrid.innerHTML = `<p class="text-red-500">Error loading vinyl collection. Please try again later.</p>`;
+            }
+        }
+
+        // Load vinyl data when the page loads
+        fetchVinylData();
+    </script>
+</body>
 </html>
