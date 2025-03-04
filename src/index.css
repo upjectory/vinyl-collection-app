@@ -2,23 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Apply dark mode by default */
-:root {
-  color-scheme: dark;
-}
-
-html {
-  @apply dark;
-}
-
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  @apply bg-black text-white;
+  background-color: #000;
+  color: #fff;
 }
 
 code {
@@ -26,53 +18,54 @@ code {
     monospace;
 }
 
-/* Album card hover effects */
-.album-card {
-  transition: all 0.3s ease;
+/* Hover effects */
+.hover\:shadow-xl:hover {
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
 }
 
-.album-card:hover {
-  transform: translateY(-5px);
-  @apply shadow-vinyl-hover;
+.transition-shadow {
+  transition: box-shadow 0.3s ease;
 }
 
-/* Album artwork hover zoom effect */
-.album-artwork {
-  transition: transform 0.3s ease;
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.album-card:hover .album-artwork {
-  transform: scale(1.05);
-}
-
-/* Custom scrollbar for dark theme */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-gray-900;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-gray-700 rounded;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-600;
-}
-
-/* Make album grid responsive */
-.album-grid {
+/* Basic grid */
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gap-6 {
   gap: 1.5rem;
 }
 
-@media (max-width: 640px) {
-  .album-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
+@media (min-width: 640px) {
+  .sm\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .md\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
