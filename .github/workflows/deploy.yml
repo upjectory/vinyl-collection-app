@@ -16,11 +16,22 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache: 'npm'
-
-      - name: Install dependencies 📦
-        run: npm ci
-
+          
+      - name: Create React App from Scratch
+        run: |
+          npx create-react-app .temp --template cra-template
+          cp -r .temp/node_modules ./
+          rm -rf .temp
+          
+      - name: Install Additional Dependencies
+        run: |
+          npm install --save axios react-icons
+          npm install --save-dev tailwindcss postcss autoprefixer gh-pages
+          
+      - name: Initialize Tailwind
+        run: |
+          npx tailwindcss init -p
+          
       - name: Build 🏗️
         run: npm run build
 
