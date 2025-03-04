@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import placeholderImage from '../assets/placeholder-album.png';
 
 /**
  * AlbumGrid component for displaying albums in a grid layout
@@ -37,6 +36,9 @@ const AlbumGrid = ({ albums, updateAlbumNote }) => {
  * AlbumCard component for individual album cards
  */
 const AlbumCard = ({ album, index, updateAlbumNote }) => {
+  // Use a hardcoded placeholder URL
+  const placeholderImage = "https://placehold.co/400x400/121212/FFFFFF?text=Album";
+  
   // Default image if none provided
   const albumArtwork = album.artwork || placeholderImage;
 
