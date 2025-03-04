@@ -7,11 +7,11 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="mt-12 py-6 bg-gray-100 dark:bg-gray-900">
+    <footer className="mt-12 py-6 bg-black border-t border-gray-800">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-400">
               &copy; {currentYear} Vinyl Collection App. All rights reserved.
             </p>
           </div>
@@ -21,7 +21,7 @@ const Footer = () => {
               href="https://github.com/upjectory/vinyl-collection-app" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-gray-600 hover:text-vinyl-primary dark:text-gray-400 dark:hover:text-vinyl-primary-dark transition-colors"
+              className="text-gray-400 hover:text-white transition-colors"
             >
               <span className="sr-only">GitHub</span>
               <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
