@@ -1,46 +1,44 @@
-name: Deploy to GitHub Pages
+name: Deploy Static Site to GitHub Pages
 
 on:
+  # Runs on pushes targeting the default branch
   push:
-    branches: [ main ]
+    branches: [main]
+
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Add permissions section
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
+  # Single deploy job since we're just deploying
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/checkout@v4
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          node-version: '18'
-          
-      - name: Create React App from Scratch
-        run: |
-          npx create-react-app .temp --template cra-template
-          cp -r .temp/node_modules ./
-          rm -rf .temp
-          
-      - name: Install Additional Dependencies
-        run: |
-          npm install --save axios react-icons
-          npm install --save-dev tailwindcss postcss autoprefixer gh-pages
-          
-      - name: Initialize Tailwind
-        run: |
-          npx tailwindcss init -p
-          
-      - name: Build
-        run: npm run build
-
+          # Upload entire repository
+          path: '.'
+      
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: build
-          branch: gh-pages
+        id: deployment
+        uses: actions/deploy-pages@v4
