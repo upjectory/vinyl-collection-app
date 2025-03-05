@@ -17,12 +17,12 @@ class SheetLoader {
             this.albums = rows.map(row => ({
                 artist: row[0] || '',
                 title: row[1] || '',
-                category: row[2] || 'N/A',
+                category: row[2] || '',
                 genre: row[3] || '',
                 year: row[4] || '',
                 favorite: row[5] === 'Yes',
                 isEP: row[6] === 'Yes',
-                size: row[7] || 'N/A',
+                size: row[7] || '',
                 notes: row[8] || '',
                 artwork: row[9] || '',
                 spotifyURL: row[10] || ''
