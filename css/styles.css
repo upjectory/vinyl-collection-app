@@ -214,6 +214,22 @@ select.filter-input {
     justify-content: center;
 }
 
+/* Special Styling for EP */
+
+.album-ep-tag {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background-color: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    z-index: 1;
+    font-weight: 600;
+    border: 1px solid rgba(251, 191, 36, 0.5);
+}
+
 .album-image-container {
     position: relative;
     padding-bottom: 100%; /* 1:1 aspect ratio */
