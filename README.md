@@ -1,5 +1,23 @@
 # 🎵 Vinyl Collection Viewer
 
+## Project Overview
+A dynamic web application that displays a vinyl record collection pulled from a Google Sheet. Users can easily customize and deploy their own collection.
+
+![Vinyl Collection Demo Screenshot](screenshot.png)
+
+## Features Showcase
+This app provides an elegant, filterable grid view of your vinyl record collection. Key features include:
+- Responsive album card display
+- Comprehensive filtering options (by artist, genre, year, etc.)
+- Clean, modern design
+- Easy customization
+
+## Key Features
+- Fetch album data dynamically from a Google Sheet
+- Display album artwork, details, and Spotify links
+- Easy to fork or download for personal use
+- Simple deployment to GitHub Pages
+
 ## Quick Start 🚀
 
 ### 1. Get the Template
