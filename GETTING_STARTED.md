@@ -42,7 +42,7 @@
 | isEP | Is this an EP? | NO | "Yes" or "No" |
 | size | Vinyl record size | YES | "12\"", "10\"", or "7\"" |
 | notes | Additional comments | NO | "Landmark jazz album" |
-| artwork | Direct image URL | YES | "https://example.com/album-cover.jpg" |
+| artwork | Direct image URL | NO | "https://example.com/album-cover.jpg" |
 | spotifyURL | Album Spotify link | YES | "https://open.spotify.com/album/..." |
 
 **Important Formatting Guidelines**:
@@ -136,31 +136,22 @@
   ```
 
 ## Tips & Troubleshooting
-- **Artwork URLs**: 
-  - Use direct links to image files
-  - Ensure images are publicly accessible
-  - PNG or JPG formats work best
-
 - **Spotify Links**: 
   - Right-click an album on Spotify
   - Select "Share"
   - Choose "Copy Song/Album Link"
 
 - **Common Pitfalls**:
+  - Arist and Album names need to be exact and accurate (!!!)
   - Ensure all required columns are filled
   - Double-check your CSV link is publicly accessible
-  - Verify image URLs are valid and direct
+  - Verify any custom image URLs are valid and direct
 
 ## Troubleshooting Self-Hosting 🛠️
 - Ensure all file paths are correct
 - Check browser console for any JavaScript errors
 - Verify Google Sheets CSV link is publicly accessible
 - Make sure your hosting environment supports static sites
-
-## Performance Tips 🚀
-- Use a CDN for faster global access
-- Optimize artwork image sizes
-- Consider caching strategies for Google Sheets data
 
 ## Customization
 - Edit `css/styles.css` to change the look and feel
