@@ -21,8 +21,8 @@ class SheetLoader {
                 genre: row[3] || '',
                 year: row[4] || '',
                 favorite: row[5] === 'Yes',
-                size: row[6] || 'N/A',
-                isEP: row[7] === 'Yes',
+                isEP: row[6] === 'Yes',
+                size: row[7] || 'N/A',
                 notes: row[8] || '',
                 artwork: row[9] || '',
                 spotifyURL: row[10] || ''
