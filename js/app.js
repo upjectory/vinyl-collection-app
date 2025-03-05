@@ -20,8 +20,31 @@ function openSpotifyUrl(url) {
             url = 'https://' + url;
         }
         
-        // Open in new tab
-        window.open(url, '_blank');
+        // Check if running in Chrome on iOS
+        const isChromeiOS = /CriOS/.test(navigator.userAgent);
+        
+        if (isChromeiOS) {
+            // For Chrome on iOS, create a temporary link element
+            // This approach works better with Chrome's security model
+            const tempLink = document.createElement('a');
+            tempLink.setAttribute('href', url);
+            tempLink.setAttribute('target', '_blank');
+            tempLink.setAttribute('rel', 'noopener noreferrer');
+            
+            // Temporarily append to document and click programmatically
+            tempLink.style.display = 'none';
+            document.body.appendChild(tempLink);
+            tempLink.click();
+            
+            // Clean up
+            setTimeout(() => {
+                document.body.removeChild(tempLink);
+            }, 100);
+        } else {
+            // Regular window.open for other browsers
+            window.open(url, '_blank');
+        }
+        
         return true;
     }
     return false;
