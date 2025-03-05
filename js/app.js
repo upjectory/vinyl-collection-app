@@ -121,8 +121,6 @@ function displayAlbums(albums) {
                 this.running--;
                 setTimeout(() => this.processNext(), 300); // Add delay between requests
             });
-        }
-      };
     
     // Create album cards
     albums.forEach((album) => {
