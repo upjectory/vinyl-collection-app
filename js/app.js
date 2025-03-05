@@ -67,7 +67,7 @@ function displayAlbums(albums) {
     const requestQueue = {
         queue: [],
         running: 0,
-        maxConcurrent: 3, // Low number for mobile compatibility
+        maxConcurrent: 3, // Limit concurrent requests
         
         add: function(url, imageElement, album) {
             this.queue.push({url, imageElement, album});
@@ -95,19 +95,14 @@ function displayAlbums(albums) {
                 });
         }
     };
-
-    // Calculate how many albums are visible in the viewport initially
-    const viewportHeight = window.innerHeight;
-    const approximateCardHeight = 300; // Estimate based on your card size
-    const initialVisibleCount = Math.ceil((viewportHeight / approximateCardHeight) * 3); // Multiply by columns
     
     // Create album cards
-    albums.forEach((album, index) => {
+    albums.forEach((album) => {
         const card = document.createElement('div');
         card.className = 'album-card';
         
         // Add favorite class to highlight favorite albums
-        if (isFavorite(album.isfavorite)) {  // Note the lowercase
+        if (isFavorite(album.isfavorite)) {
             card.classList.add('favorite');
         }
         
@@ -136,6 +131,7 @@ function displayAlbums(albums) {
         const image = document.createElement('img');
         image.className = 'album-image loading';
         image.alt = `${album.title} by ${album.artist}`;
+        image.loading = "lazy"; // Native lazy loading
         
         // Handle image loading events
         image.onload = function() {
@@ -154,22 +150,32 @@ function displayAlbums(albums) {
         const placeholderText = encodeURIComponent((album.artist || 'Album').substring(0, 10));
         image.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
         
-        // Only load artwork for initially visible albums or if artwork URL is available
-        if (index < initialVisibleCount || (album.artwork && album.artwork.trim() !== '')) {
-            loadAlbumArtwork(image, album, requestQueue);
-        } else {
-            // Lazy load when scrolled into view
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        loadAlbumArtwork(image, album, requestQueue);
-                        observer.disconnect();
-                    }
-                });
-            }, {rootMargin: "100px"});
-            
-            observer.observe(imageContainer);
-        }
+        // Set up IntersectionObserver for lazy loading iTunes artwork
+        const loadArtwork = () => {
+            if (album.artwork && album.artwork.trim() !== '') {
+                image.src = album.artwork;
+            } else if (album.artist && album.title) {
+                const searchTerm = encodeURIComponent(`${album.artist} ${album.title}`);
+                const proxyUrl = 'https://corsproxy.io/?' + 
+                    encodeURIComponent(`https://itunes.apple.com/search?term=${searchTerm}&media=music&entity=album&limit=1`);
+                
+                // Use request queue for API calls
+                requestQueue.add(proxyUrl, image, album);
+            }
+        };
+        
+        // Set up intersection observer for lazy loading
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadArtwork();
+                    observer.disconnect(); // Stop observing once loaded
+                }
+            });
+        }, {rootMargin: "200px"}); // Load when within 200px of viewport
+        
+        // Start observing
+        observer.observe(imageContainer);
         
         imageContainer.appendChild(image);
         
@@ -233,22 +239,6 @@ function displayAlbums(albums) {
         
         albumsGrid.appendChild(card);
     });
-}
-
-// Helper function for loading artwork
-function loadAlbumArtwork(imageElement, album, requestQueue) {
-    if (album.artist && album.title) {
-        if (album.artwork && album.artwork.trim() !== '') {
-            imageElement.src = album.artwork;
-        } else {
-            const searchTerm = encodeURIComponent(`${album.artist} ${album.title}`);
-            const proxyUrl = 'https://corsproxy.io/?' + 
-                encodeURIComponent(`https://itunes.apple.com/search?term=${searchTerm}&media=music&entity=album&limit=1`);
-            
-            // Use request queue instead of direct fetch
-            requestQueue.add(proxyUrl, imageElement, album);
-        }
-    }
 }
 
 // Set current year in footer
