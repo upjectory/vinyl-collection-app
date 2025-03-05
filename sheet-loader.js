@@ -21,11 +21,11 @@ class SheetLoader {
                 genre: row[3] || '',
                 year: row[4] || '',
                 favorite: row[5] === 'Yes',
-                isEP: row[6] === 'Yes',
-                notes: row[7] || '',
-                artwork: row[8] || '',
-                spotifyURL: row[9] || '',
-                size: row[10] || 'N/A'  // New size column
+                size: row[6] || 'N/A',
+                isEP: row[7] === 'Yes',
+                notes: row[8] || '',
+                artwork: row[9] || '',
+                spotifyURL: row[10] || ''
             })).filter(album => album.artist && album.title);
 
             this.debugEPAlbums();
