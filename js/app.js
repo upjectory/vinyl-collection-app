@@ -37,6 +37,16 @@ function isFavorite(favoriteValue) {
     return normalizedValue === 'yes' || normalizedValue === 'true';
 }
 
+// Function to detect EP status
+function isEP(epValue) {
+    console.log('Checking EP status:', epValue);
+    
+    if (epValue === null || epValue === undefined) return false;
+    
+    const normalizedValue = String(epValue).trim().toLowerCase();
+    return normalizedValue === 'yes' || normalizedValue === 'true';
+}
+
 // Function to display albums
 function displayAlbums(albums) {
     const albumsGrid = document.getElementById('albums-grid');
@@ -57,9 +67,17 @@ function displayAlbums(albums) {
     albums.forEach(album => {
         const card = document.createElement('div');
         card.className = 'album-card';
+
+        // Add EP tag if true
+    if (isEP(album.isep)) {
+        const epTag = document.createElement('div');
+        epTag.className = 'album-ep-tag';
+        epTag.textContent = 'EP';
+        imageContainer.appendChild(epTag);
+    }
         
         // Add favorite class to highlight favorite albums
-        if (isFavorite(album.isfavorite)) {  // Note the lowercase
+    if (isFavorite(album.isfavorite)) {  // Note the lowercase
         card.classList.add('favorite');
     }
         
