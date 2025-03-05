@@ -177,41 +177,55 @@ function displayAlbums(albums) {
             image.classList.remove('loading');
             image.classList.add('error');
             
-            // Generate a placeholder with comprehensive text
-            let placeholderText;
-            if (album.artist && album.title) {
-                // Artist - Title format (limited to avoid overflow)
-                placeholderText = encodeURIComponent(
-                    (album.artist.substring(0, 10) + 
-                    (album.artist.length > 10 ? "..." : "") + 
-                    " - " + 
-                    album.title.substring(0, 10) + 
-                    (album.title.length > 10 ? "..." : ""))
-                );
-            } else if (album.artist) {
-                // Just artist if title missing
-                placeholderText = encodeURIComponent(album.artist.substring(0, 15));
-            } else if (album.title) {
-                // Just title if artist missing
-                placeholderText = encodeURIComponent(album.title.substring(0, 15));
-            } else {
-                // Generic fallback
-                placeholderText = encodeURIComponent("No Info");
-            }
+            // Use the default background image for missing artwork
+            this.src = 'https://iili.io/HlHy9Yx.png';
             
-            this.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
+            // Create overlay text for artist and title
+            const cardElement = this.closest('.album-card');
+            if (cardElement) {
+                // Create overlay for text display
+                const textOverlay = document.createElement('div');
+                textOverlay.className = 'album-missing-overlay';
+                textOverlay.innerHTML = `
+                    <div class="album-missing-artist">${album.artist || 'Unknown Artist'}</div>
+                    <div class="album-missing-title">${album.title || 'Unknown Title'}</div>
+                `;
+                
+                // Append overlay to image container (parent of the image)
+                this.parentNode.appendChild(textOverlay);
+            }
         };
         
-        // Generate a more informative initial placeholder
-        let placeholderText;
-        if (album.artist && album.title) {
-            placeholderText = encodeURIComponent(
-                (album.artist.substring(0, 8) + " - " + album.title.substring(0, 8))
-            );
+        // Handle initial placeholder for albums without artwork
+        if (!hasArtwork) {
+            // Use the default background image
+            image.src = 'https://iili.io/HlHy9Yx.png';
+            
+            // Create overlay for text display
+            const textOverlay = document.createElement('div');
+            textOverlay.className = 'album-missing-overlay';
+            textOverlay.innerHTML = `
+                <div class="album-missing-artist">${album.artist || 'Unknown Artist'}</div>
+                <div class="album-missing-title">${album.title || 'Unknown Title'}</div>
+            `;
+            
+            // We'll append the overlay after the image is added to the container
+            setTimeout(() => {
+                imageContainer.appendChild(textOverlay);
+            }, 0);
         } else {
-            placeholderText = encodeURIComponent((album.artist || album.title || 'Album').substring(0, 12));
+            // For albums with artwork URLs, start with a basic placeholder
+            // until the actual artwork loads
+            let placeholderText;
+            if (album.artist && album.title) {
+                placeholderText = encodeURIComponent(
+                    (album.artist.substring(0, 8) + " - " + album.title.substring(0, 8))
+                );
+            } else {
+                placeholderText = encodeURIComponent((album.artist || album.title || 'Album').substring(0, 12));
+            }
+            image.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
         }
-        image.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
         
         // Set up IntersectionObserver for lazy loading iTunes artwork
         const loadArtwork = () => {
