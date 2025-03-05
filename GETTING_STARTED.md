@@ -24,7 +24,6 @@
        - Other optional fields
    - Review and manually adjust any auto-filled information as needed
 
-> [!INFO]
 > **Tip for Custom Genres**: 
 > If you have specific genre information you want to keep:
 > - Use "Fill Blank Cells" instead of "Fill All Metadata"
