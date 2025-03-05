@@ -51,9 +51,6 @@ function isEP(epValue) {
 function displayAlbums(albums) {
     const albumsGrid = document.getElementById('albums-grid');
     
-    // Instead of directly calling fetchWithRetry
-    requestQueue.add(proxyUrl, image, album);
-    
     // Clear existing albums
     albumsGrid.innerHTML = '';
     
