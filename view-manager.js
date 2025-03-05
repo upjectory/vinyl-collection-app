@@ -95,6 +95,14 @@ class ViewManager {
             meta.appendChild(year);
             meta.appendChild(genre);
             
+            // Size tag
+            if (album.size) {
+                const sizeTag = document.createElement('span');
+                sizeTag.className = 'album-size';
+                sizeTag.textContent = album.size;
+                meta.appendChild(sizeTag);
+            }
+            
             info.appendChild(title);
             info.appendChild(artist);
             info.appendChild(meta);
@@ -114,7 +122,7 @@ class ViewManager {
             <tr>
                 <th>Artwork</th><th>Artist</th><th>Title</th>
                 <th>Category</th><th>Genre</th><th>Year</th>
-                <th>Favorite</th><th>EP</th>
+                <th>Size</th><th>Favorite</th><th>EP</th>
             </tr>
         `;
         table.appendChild(thead);
@@ -129,6 +137,7 @@ class ViewManager {
                 <td>${album.category || 'N/A'}</td>
                 <td>${album.genre}</td>
                 <td>${album.year}</td>
+                <td>${album.size || 'N/A'}</td>
                 <td>${album.favorite ? '★' : '☆'}</td>
                 <td>${album.isEP ? 'Yes' : 'No'}</td>
             `;
