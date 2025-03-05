@@ -55,7 +55,7 @@ This app provides an elegant, filterable grid view of your vinyl record collecti
 | isEP | Is this an EP? | NO | "Yes" or "No" |
 | size | Vinyl record size | YES | "12\"", "10\"", or "7\"" |
 | notes | Additional comments | NO | "Landmark jazz album" |
-| artwork | Direct image URL | YES | "https://example.com/album-cover.jpg" |
+| artwork | Direct image URL | NO | "https://example.com/album-cover.jpg" |
 | spotifyURL | Album Spotify link | YES | "https://open.spotify.com/album/..." |
 
 ## Features ✨
