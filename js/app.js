@@ -85,6 +85,39 @@ function loadAlbumArtwork(imageElement, album) {
         }
     }
 }
+
+    // Queue for managing API requests
+    const requestQueue = {
+    queue: [],
+    running: 0,
+    maxConcurrent: 3, // Low number for mobile compatibility
+    
+    add: function(url, imageElement, album) {
+        this.queue.push({url, imageElement, album});
+        this.processNext();
+    },
+    
+    processNext: function() {
+        if (this.running >= this.maxConcurrent || this.queue.length === 0) return;
+        
+        const nextRequest = this.queue.shift();
+        this.running++;
+        
+        fetchWithRetry(nextRequest.url)
+            .then(data => {
+                if (data && data.results && data.results.length > 0) {
+                    nextRequest.imageElement.src = data.results[0].artworkUrl100.replace('100x100', '400x400');
+                } else {
+                    nextRequest.imageElement.onerror();
+                }
+            })
+            .catch(() => nextRequest.imageElement.onerror())
+            .finally(() => {
+                this.running--;
+                setTimeout(() => this.processNext(), 300); // Add delay between requests
+            });
+    }
+};
     
     // Create album cards
     albums.forEach(album => {
