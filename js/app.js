@@ -121,6 +121,8 @@ function displayAlbums(albums) {
                 this.running--;
                 setTimeout(() => this.processNext(), 300); // Add delay between requests
             });
+        }
+    };
     
     // Create album cards
     albums.forEach((album) => {
@@ -174,12 +176,41 @@ function displayAlbums(albums) {
         image.onerror = function() {
             image.classList.remove('loading');
             image.classList.add('error');
-            const placeholderText = encodeURIComponent((album.artist || 'Album').substring(0, 10));
+            
+            // Generate a placeholder with comprehensive text
+            let placeholderText;
+            if (album.artist && album.title) {
+                // Artist - Title format (limited to avoid overflow)
+                placeholderText = encodeURIComponent(
+                    (album.artist.substring(0, 10) + 
+                    (album.artist.length > 10 ? "..." : "") + 
+                    " - " + 
+                    album.title.substring(0, 10) + 
+                    (album.title.length > 10 ? "..." : ""))
+                );
+            } else if (album.artist) {
+                // Just artist if title missing
+                placeholderText = encodeURIComponent(album.artist.substring(0, 15));
+            } else if (album.title) {
+                // Just title if artist missing
+                placeholderText = encodeURIComponent(album.title.substring(0, 15));
+            } else {
+                // Generic fallback
+                placeholderText = encodeURIComponent("No Info");
+            }
+            
             this.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
         };
         
-        // Generate a placeholder with artist name as initial state
-        const placeholderText = encodeURIComponent((album.artist || 'Album').substring(0, 10));
+        // Generate a more informative initial placeholder
+        let placeholderText;
+        if (album.artist && album.title) {
+            placeholderText = encodeURIComponent(
+                (album.artist.substring(0, 8) + " - " + album.title.substring(0, 8))
+            );
+        } else {
+            placeholderText = encodeURIComponent((album.artist || album.title || 'Album').substring(0, 12));
+        }
         image.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
         
         // Set up IntersectionObserver for lazy loading iTunes artwork
@@ -195,34 +226,10 @@ function displayAlbums(albums) {
                 // Use request queue for API calls
                 requestQueue.add(proxyUrl, image, album);
             } else {
-                // Handle image loading errors
-                image.onerror = function() {
-                    image.classList.remove('loading');
-                    image.classList.add('error');
-                    
-                    // Generate a placeholder with comprehensive text
-                    let placeholderText;
-                    if (album.artist && album.title) {
-                        // Artist - Title format (limited to avoid overflow)
-                        placeholderText = encodeURIComponent(
-                            (album.artist.substring(0, 10) + 
-                            (album.artist.length > 10 ? "..." : "") + 
-                            " - " + 
-                            album.title.substring(0, 10) + 
-                            (album.title.length > 10 ? "..." : ""))
-                        );
-                    } else if (album.artist) {
-                        // Just artist if title missing
-                        placeholderText = encodeURIComponent(album.artist.substring(0, 15));
-                    } else if (album.title) {
-                        // Just title if artist missing
-                        placeholderText = encodeURIComponent(album.title.substring(0, 15));
-                    } else {
-                        // Generic fallback
-                        placeholderText = encodeURIComponent("No Info");
-                    }
-                    image.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
-                };
+                // No artwork and insufficient info for API search
+                image.classList.remove('loading');
+                image.onerror();
+            }
         };
         
         // Set up intersection observer for lazy loading
