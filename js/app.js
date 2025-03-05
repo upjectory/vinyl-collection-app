@@ -30,7 +30,6 @@ function openSpotifyUrl(url) {
 // Robust favorite detection function
 function isFavorite(favoriteValue) {
     console.log('Checking favorite:', favoriteValue);
-    console.log('Favorite value:', favoriteValue, 'Type:', typeof favoriteValue);
     
     if (favoriteValue === null || favoriteValue === undefined) return false;
     
