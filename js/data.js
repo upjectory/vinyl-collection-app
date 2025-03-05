@@ -134,3 +134,29 @@ function parseCSVRow(row) {
         return value.replace(/^\"|\"$/g, '');
     });
 }
+
+// Helper function for fetch with retry
+function fetchWithRetry(url, retries = 3, timeout = 3000) {
+    return new Promise((resolve, reject) => {
+        const fetchWithTimeout = () => {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeout);
+            
+            fetch(url, { signal: controller.signal })
+                .then(response => {
+                    clearTimeout(timeoutId);
+                    return response.json();
+                })
+                .then(resolve)
+                .catch(error => {
+                    clearTimeout(timeoutId);
+                    if (retries === 0) return reject(error);
+                    setTimeout(() => {
+                        fetchWithRetry(url, retries - 1, timeout).then(resolve).catch(reject);
+                    }, 1000);
+                });
+        };
+        
+        fetchWithTimeout();
+    });
+}
