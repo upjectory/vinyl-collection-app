@@ -62,6 +62,70 @@ function displayAlbums(albums) {
         albumsGrid.appendChild(noResults);
         return;
     }
+
+    // Add this to your app.js, inside the displayAlbums function
+// Right before the albums.forEach loop:
+
+// Calculate how many albums are visible in the viewport initially
+const viewportHeight = window.innerHeight;
+const approximateCardHeight = 300; // Estimate based on your card size
+const initialVisibleCount = Math.ceil((viewportHeight / approximateCardHeight) * 3); // Multiply by columns
+
+// Implement lazy loading for artwork
+albums.forEach((album, index) => {
+    // Create card and container structure as normal
+    
+    // Modify the image loading logic
+    const image = document.createElement('img');
+    image.className = 'album-image loading';
+    image.alt = `${album.title} by ${album.artist}`;
+    
+    // Always set placeholder
+    const placeholderText = encodeURIComponent((album.artist || 'Album').substring(0, 10));
+    image.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
+    
+    // Only load artwork for initially visible albums or if artwork URL is available
+    if (index < initialVisibleCount || (album.artwork && album.artwork.trim() !== '')) {
+        loadAlbumArtwork(image, album);
+    } else {
+        // Lazy load when scrolled into view
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    loadAlbumArtwork(image, album);
+                    observer.disconnect();
+                }
+            });
+        }, {rootMargin: "100px"});
+        
+        observer.observe(imageContainer);
+    }
+    
+    // Continue with rest of card creation...
+});
+
+// Helper function for loading artwork
+function loadAlbumArtwork(imageElement, album) {
+    if (album.artist && album.title) {
+        if (album.artwork && album.artwork.trim() !== '') {
+            imageElement.src = album.artwork;
+        } else {
+            const searchTerm = encodeURIComponent(`${album.artist} ${album.title}`);
+            const proxyUrl = 'https://corsproxy.io/?' + 
+                encodeURIComponent(`https://itunes.apple.com/search?term=${searchTerm}&media=music&entity=album&limit=1`);
+            
+            fetchWithRetry(proxyUrl)
+                .then(data => {
+                    if (data && data.results && data.results.length > 0) {
+                        imageElement.src = data.results[0].artworkUrl100.replace('100x100', '400x400');
+                    } else {
+                        imageElement.onerror();
+                    }
+                })
+                .catch(() => imageElement.onerror());
+        }
+    }
+}
     
     // Create album cards
     albums.forEach(album => {
