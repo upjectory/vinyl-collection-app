@@ -24,10 +24,12 @@ class SheetLoader {
                 isEP: row[6] === 'Yes',
                 notes: row[7] || '',
                 artwork: row[8] || '',
-                spotifyURL: row[9] || ''
+                spotifyURL: row[9] || '',
+                size: row[10] || 'N/A'  // New size column
             })).filter(album => album.artist && album.title);
 
             this.debugEPAlbums();
+            this.debugAlbumSizes();
             return this.albums;
         } catch (error) {
             console.error('Error fetching collection:', error);
@@ -41,6 +43,19 @@ class SheetLoader {
         console.log(`Total EP Albums: ${epAlbums.length}`);
         epAlbums.forEach(album => {
             console.log(`- ${album.artist} - ${album.title}`);
+        });
+        console.groupEnd();
+    }
+
+    debugAlbumSizes() {
+        const sizeCounts = this.albums.reduce((counts, album) => {
+            counts[album.size] = (counts[album.size] || 0) + 1;
+            return counts;
+        }, {});
+
+        console.group('Debug: Album Sizes');
+        Object.entries(sizeCounts).forEach(([size, count]) => {
+            console.log(`${size}: ${count} albums`);
         });
         console.groupEnd();
     }
