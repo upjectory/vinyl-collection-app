@@ -104,20 +104,25 @@ function displayAlbums(albums) {
             this.running++;
             
             fetchWithRetry(nextRequest.url)
-                .then(data => {
-                    if (data && data.results && data.results.length > 0) {
-                        nextRequest.imageElement.src = data.results[0].artworkUrl100.replace('100x100', '400x400');
-                    } else {
-                        nextRequest.imageElement.onerror();
+            .then(data => {
+                if (data && data.results && data.results.length > 0) {
+                    nextRequest.imageElement.src = data.results[0].artworkUrl100.replace('100x100', '400x400');
+                    // If we found artwork through API, remove the no-artwork class
+                    const cardElement = nextRequest.imageElement.closest('.album-card');
+                    if (cardElement) {
+                        cardElement.classList.remove('no-artwork');
                     }
-                })
-                .catch(() => nextRequest.imageElement.onerror())
-                .finally(() => {
-                    this.running--;
-                    setTimeout(() => this.processNext(), 300); // Add delay between requests
-                });
+                } else {
+                    nextRequest.imageElement.onerror();
+                }
+            })
+            .catch(() => nextRequest.imageElement.onerror())
+            .finally(() => {
+                this.running--;
+                setTimeout(() => this.processNext(), 300); // Add delay between requests
+            });
         }
-    };
+      };
     
     // Create album cards
     albums.forEach((album) => {
@@ -127,6 +132,12 @@ function displayAlbums(albums) {
         // Add favorite class to highlight favorite albums
         if (isFavorite(album.isfavorite)) {
             card.classList.add('favorite');
+        }
+        
+        // Add no-artwork class if no artwork URL is provided
+        const hasArtwork = album.artwork && album.artwork.trim() !== '';
+        if (!hasArtwork) {
+            card.classList.add('no-artwork');
         }
         
         const imageContainer = document.createElement('div');
@@ -178,13 +189,42 @@ function displayAlbums(albums) {
             if (album.artwork && album.artwork.trim() !== '') {
                 image.src = album.artwork;
             } else if (album.artist && album.title) {
+                // Try to get artwork from iTunes API if missing
                 const searchTerm = encodeURIComponent(`${album.artist} ${album.title}`);
                 const proxyUrl = 'https://corsproxy.io/?' + 
                     encodeURIComponent(`https://itunes.apple.com/search?term=${searchTerm}&media=music&entity=album&limit=1`);
                 
                 // Use request queue for API calls
                 requestQueue.add(proxyUrl, image, album);
-            }
+            } else {
+                // Handle image loading errors
+                image.onerror = function() {
+                    image.classList.remove('loading');
+                    image.classList.add('error');
+                    
+                    // Generate a placeholder with comprehensive text
+                    let placeholderText;
+                    if (album.artist && album.title) {
+                        // Artist - Title format (limited to avoid overflow)
+                        placeholderText = encodeURIComponent(
+                            (album.artist.substring(0, 10) + 
+                            (album.artist.length > 10 ? "..." : "") + 
+                            " - " + 
+                            album.title.substring(0, 10) + 
+                            (album.title.length > 10 ? "..." : ""))
+                        );
+                    } else if (album.artist) {
+                        // Just artist if title missing
+                        placeholderText = encodeURIComponent(album.artist.substring(0, 15));
+                    } else if (album.title) {
+                        // Just title if artist missing
+                        placeholderText = encodeURIComponent(album.title.substring(0, 15));
+                    } else {
+                        // Generic fallback
+                        placeholderText = encodeURIComponent("No Info");
+                    }
+                    image.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
+                };
         };
         
         // Set up intersection observer for lazy loading
