@@ -69,9 +69,9 @@ function displayAlbums(albums) {
         card.className = 'album-card';
         
         // Add favorite class to highlight favorite albums
-    if (isFavorite(album.isfavorite)) {  // Note the lowercase
-        card.classList.add('favorite');
-    }
+        if (isFavorite(album.isfavorite)) {  // Note the lowercase
+            card.classList.add('favorite');
+        }
         
         const imageContainer = document.createElement('div');
         imageContainer.className = 'album-image-container';
@@ -96,47 +96,55 @@ function displayAlbums(albums) {
         
         // Create image element
         const image = document.createElement('img');
-        image.className = 'album-image';
+        image.className = 'album-image loading';
         image.alt = `${album.title} by ${album.artist}`;
         
-        // Generate a placeholder with artist name as fallback
+        // Handle image loading events
+        image.onload = function() {
+            image.classList.remove('loading');
+        };
+        
+        // Handle image loading errors
+        image.onerror = function() {
+            image.classList.remove('loading');
+            image.classList.add('error');
+            const placeholderText = encodeURIComponent((album.artist || 'Album').substring(0, 10));
+            this.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
+        };
+        
+        // Generate a placeholder with artist name as initial state
         const placeholderText = encodeURIComponent((album.artist || 'Album').substring(0, 10));
         image.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
         
-        // Use iTunes API to get album artwork
+        // Use artwork from spreadsheet or fetch from iTunes API with improved error handling
         if (album.artist && album.title) {
             // First try to use provided artwork URL if it exists
             if (album.artwork && album.artwork.trim() !== '') {
                 image.src = album.artwork;
             } else {
-                // Try to fetch from iTunes
+                // Try to fetch from iTunes using a more reliable proxy
                 const searchTerm = encodeURIComponent(`${album.artist} ${album.title}`);
-                const itunesUrl = `https://itunes.apple.com/search?term=${searchTerm}&media=music&entity=album&limit=1`;
                 
-                fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(itunesUrl)}`)
-                    .then(response => response.json())
+                // Use corsproxy.io instead of allorigins.win
+                const proxyUrl = 'https://corsproxy.io/?' + 
+                    encodeURIComponent(`https://itunes.apple.com/search?term=${searchTerm}&media=music&entity=album&limit=1`);
+                
+                // Use fetch with retry logic
+                fetchWithRetry(proxyUrl)
                     .then(data => {
-                        try {
-                            const itunesData = JSON.parse(data.contents);
-                            if (itunesData.resultCount > 0) {
-                                const artworkUrl = itunesData.results[0].artworkUrl100.replace('100x100', '400x400');
-                                image.src = artworkUrl;
-                            }
-                        } catch (e) {
-                            console.log('Error parsing iTunes response', e);
+                        if (data && data.results && data.results.length > 0) {
+                            image.src = data.results[0].artworkUrl100.replace('100x100', '400x400');
+                        } else {
+                            // Trigger error handler if no results
+                            image.onerror();
                         }
                     })
-                    .catch(error => {
-                        console.log('Error fetching from iTunes API', error);
+                    .catch(() => {
+                        // Trigger error handler on fetch failure
+                        image.onerror();
                     });
             }
         }
-        
-        // Handle image loading errors
-        image.onerror = function() {
-            const placeholderText = encodeURIComponent((album.artist || 'Album').substring(0, 10));
-            this.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
-        };
         
         imageContainer.appendChild(image);
         
