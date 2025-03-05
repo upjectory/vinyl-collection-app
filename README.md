@@ -13,9 +13,41 @@
 - Copy the generated link
 
 ### 3. Deploy Your Collection
+
+#### Option A: GitHub Pages (Recommended)
 - Fork this repository
 - Update the CSV link in `js/data.js`
 - Enable GitHub Pages in repository settings
+
+#### Option B: Self-Hosting
+- Clone the repository to your local machine
+- Use a simple static file server to host
+- Update the CSV link in `js/data.js`
+
+## Hosting Options 🌐
+
+### GitHub Pages
+- Free
+- Easy setup
+- Automatic HTTPS
+- Linked to your GitHub account
+
+### Self-Hosting Methods
+1. **Local Development Server**
+   - Use Python: `python -m http.server`
+   - Use Node.js: `npx http-server`
+   - Use Live Server extension in VS Code
+
+2. **Web Hosting Platforms**
+   - Netlify
+   - Vercel
+   - Cloudflare Pages
+   - Any static site hosting service
+
+3. **Personal Server**
+   - Host on Apache
+   - Host on Nginx
+   - Raspberry Pi web server
 
 ## Spreadsheet Columns 📊
 
