@@ -215,6 +215,51 @@ select.filter-input {
     justify-content: center;
 }
 
+/* NEW STYLES: Add this block just before the media queries */
+/* Styles for albums without artwork */
+.album-card.no-artwork {
+    background-color: #111;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.album-card.no-artwork .album-image {
+    background-color: #1a1a1a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #666;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    padding: 15px;
+}
+
+.album-card.no-artwork .album-info {
+    width: 100%;
+    text-align: center;
+}
+
+.album-card.no-artwork .album-title {
+    font-size: 14px;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    max-height: 3em;
+    margin-bottom: 4px;
+}
+
+.album-card.no-artwork .album-artist {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
 /* Special Styling for EP */
 
 .album-ep-tag {
