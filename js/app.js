@@ -37,15 +37,6 @@ function isFavorite(favoriteValue) {
     return normalizedValue === 'yes' || normalizedValue === 'true';
 }
 
-// Add EP tag if true
-if (album.isEP) {
-    
-    const epTag = document.createElement('div');
-    epTag.className = 'album-ep-tag';
-    epTag.textContent = 'EP';
-    imageContainer.appendChild(epTag);
-}
-
 // Function to display albums
 function displayAlbums(albums) {
     const albumsGrid = document.getElementById('albums-grid');
