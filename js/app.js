@@ -67,14 +67,6 @@ function displayAlbums(albums) {
     albums.forEach(album => {
         const card = document.createElement('div');
         card.className = 'album-card';
-
-        // Add EP tag if true
-    if (isEP(album.isep)) {
-        const epTag = document.createElement('div');
-        epTag.className = 'album-ep-tag';
-        epTag.textContent = 'EP';
-        imageContainer.appendChild(epTag);
-    }
         
         // Add favorite class to highlight favorite albums
     if (isFavorite(album.isfavorite)) {  // Note the lowercase
@@ -158,11 +150,19 @@ function displayAlbums(albums) {
         
         // Add favorite badge if true
         if (isFavorite(album.isfavorite)) {
-        const favorite = document.createElement('div');
-        favorite.className = 'album-favorite-badge';
-        favorite.innerHTML = '★';
-        imageContainer.appendChild(favorite);
-    }
+            const favorite = document.createElement('div');
+            favorite.className = 'album-favorite-badge';
+            favorite.innerHTML = '★';
+            imageContainer.appendChild(favorite);
+        }        
+
+        // Add EP tag if true
+        if (isEP(album.isep)) {
+            const epTag = document.createElement('div');
+            epTag.className = 'album-ep-tag';
+            epTag.textContent = 'EP';
+            imageContainer.appendChild(epTag);
+        }
         
         const info = document.createElement('div');
         info.className = 'album-info';
