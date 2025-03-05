@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Vinyl Collection</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="site-title">
+                My Vinyl Collection
+            </h1>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div id="filter-toggle" class="filter-toggle">
+            <h2 class="filter-toggle-title">Filter Collection</h2>
+            <div id="filter-toggle-icon" class="filter-toggle-icon">▼</div>
+        </div>
+        
+        <div id="filters" class="filters" style="display: none;">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="title-filter" class="filter-label">Title</label>
+                    <input type="text" id="title-filter" class="filter-input" placeholder="Filter by title...">
+                </div>
+                <div class="filter-group">
+                    <label for="artist-filter" class="filter-label">Artist</label>
+                    <select id="artist-filter" class="filter-input">
+                        <option value="">All Artists</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="genre-filter" class="filter-label">Genre</label>
+                    <select id="genre-filter" class="filter-input">
+                        <option value="">All Genres</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="year-filter" class="filter-label">Year</label>
+                    <select id="year-filter" class="filter-input">
+                        <option value="">All Years</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="category-filter" class="filter-label">Category</label>
+                    <select id="category-filter" class="filter-input">
+                        <option value="">All Categories</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="display: flex; align-items: flex-end;">
+                    <button id="reset-filters" class="filter-reset">Reset Filters</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="loading" class="loading">Loading vinyl collection...</div>
+        <div id="error" class="error" style="display: none;"></div>
+        <div id="albums-grid" class="albums-grid" style="display: none;"></div>
+        <div id="counter" class="counter" style="display: none;"></div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> My Vinyl Collection</p>
+        </div>
+    </footer>
+    
+    <script src="js/data.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
