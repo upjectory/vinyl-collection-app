@@ -390,17 +390,18 @@ footer {
     }
 }
 
-/* Album image container - ensure square aspect ratio */
+/* Force square album artwork - eliminate any remaining issues */
 .album-image-container {
     position: relative !important;
     width: 100% !important;
-    padding-bottom: 100% !important; /* Creates square aspect ratio */
+    height: 0 !important; /* Important for padding-based aspect ratio */
+    padding-top: 100% !important; /* Creates square aspect ratio */
+    padding-bottom: 0 !important; /* Override any other padding */
     background-color: #111 !important;
     overflow: hidden !important;
-    aspect-ratio: 1/1 !important;
 }
 
-/* Album image - ensure proper positioning within container */
+/* Reset all album image styles */
 .album-image {
     position: absolute !important;
     top: 0 !important;
