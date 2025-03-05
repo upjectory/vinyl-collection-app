@@ -100,9 +100,6 @@ albums.forEach((album, index) => {
         
         observer.observe(imageContainer);
     }
-    
-    // Continue with rest of card creation...
-});
 
 // Helper function for loading artwork
 function loadAlbumArtwork(imageElement, album) {
