@@ -1,48 +1,53 @@
-# Vinyl Collection Viewer
+# 🎵 Vinyl Collection Viewer
 
-## Project Overview
-A dynamic web application that displays a vinyl record collection pulled from a Google Sheet. Users can easily customize and deploy their own collection.
+## Quick Start 🚀
 
-## Key Features
-- Fetch album data dynamically from a Google Sheet
-- Display album artwork, details, and Spotify links (opens in new tab)
-- Gold outline highlighting for favorite albums
-- Easy to fork or download for personal use
-- Simple deployment to GitHub Pages
+### 1. Get the Template
+- Open the [Vinyl Collection - TEMPLATE Google Sheet](https://docs.google.com/spreadsheets/d/1xAzo6vCafjT6XekXP-nmN_gapEfnvyCjyyk4ZPo1K3I/edit?usp=sharing)
+- Make a copy to your Google Drive
+- Enter your vinyl collection data
 
-## Quick Start
+### 2. Publish Spreadsheet
+- Click `File` > `Share` > `Publish to web`
+- Select CSV format
+- Copy the generated link
 
-### Option 1: Local Usage
-1. Download the repository files
-2. Update the Google Sheet source URL in js/data.js
-3. Open index.html in a web browser
+### 3. Deploy Your Collection
+- Fork this repository
+- Update the CSV link in `js/data.js`
+- Enable GitHub Pages in repository settings
 
-### Option 2: GitHub Pages Deployment
-1. Fork this repository
-2. Update the Google Sheet source URL in js/data.js
-3. Enable GitHub Pages in repository settings
+## Spreadsheet Columns 📊
 
-## Configuration
-Modify the Google Sheet source URL in js/data.js to point to your personal collection spreadsheet.
+| Column | Description | Required | Example |
+|--------|-------------|----------|---------|
+| artist | Full name of the artist/band | YES | "Miles Davis" |
+| title | Album name | YES | "Kind of Blue" |
+| category | Optional collection category | NO | "Jazz", "Personal Favorites" |
+| genre | Music genre | YES | "Jazz" |
+| year | Release year | YES | 1959 |
+| favorite | Mark as favorite? | NO | "Yes" or "No" |
+| isEP | Is this an EP? | NO | "Yes" or "No" |
+| size | Vinyl record size | YES | "12\"", "10\"", or "7\"" |
+| notes | Additional comments | NO | "Landmark jazz album" |
+| artwork | Direct image URL | YES | "https://example.com/album-cover.jpg" |
+| spotifyURL | Album Spotify link | YES | "https://open.spotify.com/album/..." |
 
-### Required Google Sheet Columns
-- artist
-- title
-- category (optional)
-- genre
-- year
-- favorite (Yes/No, optional)
-- isEP (Yes/No, optional)
-- notes (optional, not displayed in album card view)
-- artwork
-- spotifyURL
-
-## Technical Details
-- Built with vanilla JavaScript
-- Coded in modular files for better organization
-- Pulls data from Google Sheets API
+## Features ✨
+- Dynamically fetch album data from Google Sheets
+- Display album artwork, details, and Spotify links
 - Responsive design
+- Easy customization
 - No build step required
 
-## Contributing
-Feel free to open issues or submit pull requests to improve the project.
+## Getting Started 📖
+For detailed setup instructions, check out our [GETTING_STARTED.md](GETTING_STARTED.md)
+
+## Contributing 🤝
+- Open issues for bugs or feature requests
+- Pull requests are welcome!
+
+## License 📄
+Open-source. See LICENSE file for details.
+
+**Happy Collecting! 🎧🖤**
