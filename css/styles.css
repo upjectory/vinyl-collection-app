@@ -224,9 +224,9 @@ select.filter-input {
     justify-content: center;
     align-items: center;
 }
-
 .album-card.no-artwork .album-image {
-    background-color: #1a1a1a;
+    background-color: transparent;
+    opacity: 1 !important;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -236,12 +236,10 @@ select.filter-input {
     text-align: center;
     padding: 15px;
 }
-
 .album-card.no-artwork .album-info {
     width: 100%;
     text-align: center;
 }
-
 .album-card.no-artwork .album-title {
     font-size: 14px;
     white-space: normal;
@@ -253,13 +251,11 @@ select.filter-input {
     max-height: 3em;
     margin-bottom: 4px;
 }
-
 .album-card.no-artwork .album-artist {
     font-size: 13px;
     color: #666;
     margin-bottom: 8px;
 }
-
 /* Styling for missing artwork overlay */
 .album-missing-overlay {
     position: absolute;
@@ -271,47 +267,35 @@ select.filter-input {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color: rgba(0, 0, 0, 0.6);
     padding: 12px;
     box-sizing: border-box;
     text-align: center;
-    z-index: 1;
+    z-index: 2;
+    pointer-events: none; /* Let clicks go through to the card */
 }
-
 .album-missing-artist {
-    font-weight: 600;
-    font-size: 16px;
+    font-weight: 700;
+    font-size: 18px;
     color: white;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 100%;
+    width: 90%;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
-
 .album-missing-title {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 100%;
+    width: 90%;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
 }
-
-/* Enhance existing no-artwork class */
-.album-card.no-artwork .album-image {
-    background-color: transparent;
-    opacity: 1 !important;
-}
-
 .album-card.no-artwork:hover .album-image {
     transform: none;
 }
-
-.album-card.no-artwork .album-missing-overlay {
-    background-color: rgba(0, 0, 0, 0.75);
-}
-
 /* For long titles that need to adjust on smaller screens */
 @media (max-width: 240px) {
     .album-missing-artist {
