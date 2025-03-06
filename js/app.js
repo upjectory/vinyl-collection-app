@@ -124,60 +124,6 @@ function displayAlbums(albums) {
         }
     };
     
-    // Function to display albums
-function displayAlbums(albums) {
-    const albumsGrid = document.getElementById('albums-grid');
-    
-    // Clear existing albums
-    albumsGrid.innerHTML = '';
-    
-    // Show message if no albums match the filters
-    if (albums.length === 0) {
-        const noResults = document.createElement('div');
-        noResults.className = 'no-results';
-        noResults.textContent = 'No albums match your filters.';
-        albumsGrid.appendChild(noResults);
-        return;
-    }
-
-    // Queue for managing API requests
-    const requestQueue = {
-        queue: [],
-        running: 0,
-        maxConcurrent: 3, // Limit concurrent requests
-        
-        add: function(url, imageElement, album) {
-            this.queue.push({url, imageElement, album});
-            this.processNext();
-        },
-        
-        processNext: function() {
-            if (this.running >= this.maxConcurrent || this.queue.length === 0) return;
-            
-            const nextRequest = this.queue.shift();
-            this.running++;
-            
-            fetchWithRetry(nextRequest.url)
-            .then(data => {
-                if (data && data.results && data.results.length > 0) {
-                    nextRequest.imageElement.src = data.results[0].artworkUrl100.replace('100x100', '400x400');
-                    // If we found artwork through API, remove the no-artwork class
-                    const cardElement = nextRequest.imageElement.closest('.album-card');
-                    if (cardElement) {
-                        cardElement.classList.remove('no-artwork');
-                    }
-                } else {
-                    nextRequest.imageElement.onerror();
-                }
-            })
-            .catch(() => nextRequest.imageElement.onerror())
-            .finally(() => {
-                this.running--;
-                setTimeout(() => this.processNext(), 300); // Add delay between requests
-            });
-        }
-    };
-    
     // Create album cards
     albums.forEach((album) => {
         const card = document.createElement('div');
