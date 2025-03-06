@@ -177,12 +177,11 @@ function displayAlbums(albums) {
             image.classList.remove('loading');
             image.classList.add('error');
             
-            // Use the default background image for missing artwork
-            this.src = 'https://iili.io/HlHy9Yx.png';
-            
-            // Create overlay text for artist and title
-            const cardElement = this.closest('.album-card');
-            if (cardElement) {
+            // Only set source if we haven't already created an overlay
+            if (!imageContainer.querySelector('.album-missing-overlay')) {
+                // Use the default background image for missing artwork
+                this.src = 'https://iili.io/HlHy9Yx.png';
+                
                 // Create overlay for text display
                 const textOverlay = document.createElement('div');
                 textOverlay.className = 'album-missing-overlay';
@@ -191,10 +190,21 @@ function displayAlbums(albums) {
                     <div class="album-missing-title">${album.title || 'Unknown Title'}</div>
                 `;
                 
-                // Append overlay to image container (parent of the image)
-                this.parentNode.appendChild(textOverlay);
+                // Append overlay to image container
+                imageContainer.appendChild(textOverlay);
             }
         };
+
+        // For the initial image placeholder
+        if (!hasArtwork) {
+            // Set initial source to the default background
+            image.src = 'https://iili.io/HlHy9Yx.png';
+        } else {
+            // For albums with artwork, use a temporary placeholder 
+            // until the actual artwork loads
+            const tempPlaceholder = `https://placehold.co/400x400/121212/444444?text=${encodeURIComponent('Loading...')}`;
+            image.src = tempPlaceholder;
+        }
         
         // Handle initial placeholder for albums without artwork
         if (!hasArtwork) {
