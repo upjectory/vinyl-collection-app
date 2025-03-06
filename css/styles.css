@@ -153,11 +153,7 @@ select.filter-input {
 
 /* Error message */
 .error {
-    background-color: rgba(239, 68, 68, 0.2);
     color: #f87171;
-    padding: 15px;
-    border-radius: 8px;
-    margin: 20px 0;
     text-align: center;
 }
 
@@ -292,7 +288,6 @@ select.filter-input {
     text-align: center;
     z-index: 2;
     pointer-events: none;
-    background-color: rgba(0,0,0,0.3); /* Subtle darkening effect */
 }
 
 .album-missing-artist {
@@ -529,12 +524,6 @@ footer {
     object-fit: cover !important;
     object-position: center !important;
     transition: transform 0.3s ease;
-}
-
-/* Make sure error images maintain proper positioning */
-.album-image.error {
-    opacity: 0.8;
-    object-fit: cover !important;
 }
 
 /* Only show the missing overlay on no-artwork cards */
