@@ -498,6 +498,21 @@ footer {
     transition: transform 0.3s ease;
 }
 
+/* Make sure error images maintain proper positioning */
+.album-image.error {
+    opacity: 0.8;
+    object-fit: cover !important;
+}
+
+/* Only show the missing overlay on no-artwork cards */
+.album-missing-overlay {
+    display: none;
+}
+
+.album-card.no-artwork .album-missing-overlay {
+    display: flex;
+}
+
 .album-image.loading {
     opacity: 0.7;
 }
