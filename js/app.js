@@ -124,178 +124,104 @@ function displayAlbums(albums) {
         }
     };
     
-    // Create album cards
-    albums.forEach((album) => {
-        const card = document.createElement('div');
-        card.className = 'album-card';
-        
-        // Add favorite class to highlight favorite albums
-        if (isFavorite(album.isfavorite)) {
-            card.classList.add('favorite');
-        }
-        
-        // Add no-artwork class if no artwork URL is provided
-        const hasArtwork = album.artwork && album.artwork.trim() !== '';
-        if (!hasArtwork) {
-            card.classList.add('no-artwork');
-            
-            // Set initial source to the default background
-            image.src = 'https://iili.io/HlHy9Yx.png';
-            
-            // Only add text overlay for albums without artwork
-            // Create overlay for text display
-            const textOverlay = document.createElement('div');
-            textOverlay.className = 'album-missing-overlay';
-            textOverlay.innerHTML = `
-                <div class="album-missing-artist">${album.artist || 'Unknown Artist'}</div>
-                <div class="album-missing-title">${album.title || 'Unknown Title'}</div>
-            `;
-            
-            // Append overlay to image container after the image is added
-            setTimeout(() => {
-                imageContainer.appendChild(textOverlay);
-            }, 0);
-        } else {
-            // For albums with artwork, use a temporary placeholder 
-            // until the actual artwork loads - but NO text overlay
-            const tempPlaceholder = `https://placehold.co/400x400/121212/444444?text=${encodeURIComponent('Loading...')}`;
-            image.src = tempPlaceholder;
-        }
-        
-        const imageContainer = document.createElement('div');
-        imageContainer.className = 'album-image-container';
-        
-        // Make entire card clickable if Spotify URL exists
-        let spotifyLink = null;
-        for (const key in album) {
-            if (key.toLowerCase().includes('spotify')) {
-                spotifyLink = album[key];
-                break;
-            }
-        }
-        
-        if (spotifyLink && spotifyLink.trim() !== '') {
-            card.classList.add('spotify-enabled');
-            card.dataset.spotifyUrl = spotifyLink;
-            card.addEventListener('click', function() {
-                const url = this.dataset.spotifyUrl;
-                openSpotifyUrl(url);
-            });
-        }
-        
-        // Create image element
-        const image = document.createElement('img');
-        image.className = 'album-image loading';
-        image.alt = `${album.title} by ${album.artist}`;
-        image.loading = "lazy"; // Native lazy loading
-        
-        // Handle image loading events
-        image.onload = function() {
-            image.classList.remove('loading');
-        };
-        
-        // Handle image loading errors
-        image.onerror = function() {
-            image.classList.remove('loading');
-            image.classList.add('error');
-            
-            // Only add overlay for albums without artwork that don't already have one
-            if (!hasArtwork && !imageContainer.querySelector('.album-missing-overlay')) {
-                // Use the default background image
-                this.src = 'https://iili.io/HlHy9Yx.png';
-                
-                // Create overlay for text display
-                const textOverlay = document.createElement('div');
-                textOverlay.className = 'album-missing-overlay';
-                textOverlay.innerHTML = `
-                    <div class="album-missing-artist">${album.artist || 'Unknown Artist'}</div>
-                    <div class="album-missing-title">${album.title || 'Unknown Title'}</div>
-                `;
-                
-                // Append overlay to image container
-                imageContainer.appendChild(textOverlay);
-            } else if (hasArtwork) {
-                // For albums that should have artwork but failed to load,
-                // just show a simple placeholder with no text overlay
-                this.src = `https://placehold.co/400x400/121212/444444?text=${encodeURIComponent('No Image')}`;
-            }
-        };
+    // Add no-artwork class if no artwork URL is provided
+    const hasArtwork = album.artwork && album.artwork.trim() !== '';
+    if (!hasArtwork) {
+        card.classList.add('no-artwork');
+    }
 
-        // For the initial image placeholder
-        if (!hasArtwork) {
-            // Set initial source to the default background
-            image.src = 'https://iili.io/HlHy9Yx.png';
-        } else {
-            // For albums with artwork, use a temporary placeholder 
-            // until the actual artwork loads
-            const tempPlaceholder = `https://placehold.co/400x400/121212/444444?text=${encodeURIComponent('Loading...')}`;
-            image.src = tempPlaceholder;
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'album-image-container';
+
+    // Make entire card clickable if Spotify URL exists
+    let spotifyLink = null;
+    for (const key in album) {
+        if (key.toLowerCase().includes('spotify')) {
+            spotifyLink = album[key];
+            break;
         }
+    }
+
+    if (spotifyLink && spotifyLink.trim() !== '') {
+        card.classList.add('spotify-enabled');
+        card.dataset.spotifyUrl = spotifyLink;
+        card.addEventListener('click', function() {
+            const url = this.dataset.spotifyUrl;
+            openSpotifyUrl(url);
+        });
+    }
+
+    // Create image element
+    const image = document.createElement('img');
+    image.className = 'album-image loading';
+    image.alt = `${album.title} by ${album.artist}`;
+    image.loading = "lazy"; // Native lazy loading
+
+    // Handle image loading events
+    image.onload = function() {
+        image.classList.remove('loading');
+    };
+
+    // Handle image loading errors
+    image.onerror = function() {
+        image.classList.remove('loading');
+        image.classList.add('error');
         
-        // Handle initial placeholder for albums without artwork
         if (!hasArtwork) {
             // Use the default background image
-            image.src = 'https://iili.io/HlHy9Yx.png';
-            
-            // Create overlay for text display
-            const textOverlay = document.createElement('div');
-            textOverlay.className = 'album-missing-overlay';
-            textOverlay.innerHTML = `
-                <div class="album-missing-artist">${album.artist || 'Unknown Artist'}</div>
-                <div class="album-missing-title">${album.title || 'Unknown Title'}</div>
-            `;
-            
-            // We'll append the overlay after the image is added to the container
-            setTimeout(() => {
-                imageContainer.appendChild(textOverlay);
-            }, 0);
+            this.src = 'https://iili.io/HlHy9Yx.png';
         } else {
-            // For albums with artwork URLs, start with a basic placeholder
-            // until the actual artwork loads
-            let placeholderText;
-            if (album.artist && album.title) {
-                placeholderText = encodeURIComponent(
-                    (album.artist.substring(0, 8) + " - " + album.title.substring(0, 8))
-                );
-            } else {
-                placeholderText = encodeURIComponent((album.artist || album.title || 'Album').substring(0, 12));
-            }
-            image.src = `https://placehold.co/400x400/121212/FFFFFF?text=${placeholderText}`;
+            // For albums that should have artwork but failed to load,
+            // just show a simple placeholder with no text overlay
+            this.src = `https://placehold.co/400x400/121212/444444?text=${encodeURIComponent('No Image')}`;
         }
+    };
+
+    // Set initial image source
+    if (!hasArtwork) {
+        // Set initial source to the default background for albums without artwork
+        image.src = 'https://iili.io/HlHy9Yx.png';
+    } else {
+        // For albums with artwork, use a temporary placeholder until actual artwork loads
+        const tempPlaceholder = `https://placehold.co/400x400/121212/444444?text=${encodeURIComponent('Loading...')}`;
+        image.src = tempPlaceholder;
+    }
+
+    // Set up IntersectionObserver for lazy loading iTunes artwork
+    const loadArtwork = () => {
+        if (album.artwork && album.artwork.trim() !== '') {
+            image.src = album.artwork;
+        } else if (album.artist && album.title) {
+            // Try to get artwork from iTunes API if missing
+            const searchTerm = encodeURIComponent(`${album.artist} ${album.title}`);
+            const proxyUrl = 'https://corsproxy.io/?' + 
+                encodeURIComponent(`https://itunes.apple.com/search?term=${searchTerm}&media=music&entity=album&limit=1`);
+            
+            // Use request queue for API calls
+            requestQueue.add(proxyUrl, image, album);
+        } else {
+            // No artwork and insufficient info for API search
+            image.classList.remove('loading');
+            image.onerror();
+        }
+    };
+
+    // Add the image to container
+    imageContainer.appendChild(image);
+
+    // Now that the image is added, add overlay for albums without artwork
+    if (!hasArtwork) {
+        // Create overlay for text display
+        const textOverlay = document.createElement('div');
+        textOverlay.className = 'album-missing-overlay';
+        textOverlay.innerHTML = `
+            <div class="album-missing-artist">${album.artist || 'Unknown Artist'}</div>
+            <div class="album-missing-title">${album.title || 'Unknown Title'}</div>
+        `;
         
-        // Set up IntersectionObserver for lazy loading iTunes artwork
-        const loadArtwork = () => {
-            if (album.artwork && album.artwork.trim() !== '') {
-                image.src = album.artwork;
-            } else if (album.artist && album.title) {
-                // Try to get artwork from iTunes API if missing
-                const searchTerm = encodeURIComponent(`${album.artist} ${album.title}`);
-                const proxyUrl = 'https://corsproxy.io/?' + 
-                    encodeURIComponent(`https://itunes.apple.com/search?term=${searchTerm}&media=music&entity=album&limit=1`);
-                
-                // Use request queue for API calls
-                requestQueue.add(proxyUrl, image, album);
-            } else {
-                // No artwork and insufficient info for API search
-                image.classList.remove('loading');
-                image.onerror();
-            }
-        };
-        
-        // Set up intersection observer for lazy loading
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadArtwork();
-                    observer.disconnect(); // Stop observing once loaded
-                }
-            });
-        }, {rootMargin: "200px"}); // Load when within 200px of viewport
-        
-        // Start observing
-        observer.observe(imageContainer);
-        
-        imageContainer.appendChild(image);
+        // Append overlay to image container
+        imageContainer.appendChild(textOverlay);
+    }
         
         // Add category tag if present
         if (album.category) {
