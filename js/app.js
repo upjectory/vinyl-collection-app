@@ -177,14 +177,8 @@ function displayAlbums(albums) {
             image.classList.remove('loading');
             image.classList.add('error');
             
-            if (!hasArtwork) {
-                // Use the default background image
-                this.src = 'https://iili.io/HlHy9Yx.png';
-            } else {
-                // For albums that should have artwork but failed to load,
-                // just show a simple placeholder with no text overlay
-                this.src = `https://placehold.co/400x400/121212/444444?text=${encodeURIComponent('No Image')}`;
-            }
+            // Use the default background image for all error cases
+            this.src = 'https://iili.io/HlHy9Yx.png';
         };
 
         // Set initial image source
@@ -197,42 +191,10 @@ function displayAlbums(albums) {
             image.src = tempPlaceholder;
         }
 
-        // Set up IntersectionObserver for lazy loading iTunes artwork
-        const loadArtwork = () => {
-            if (album.artwork && album.artwork.trim() !== '') {
-                image.src = album.artwork;
-            } else if (album.artist && album.title) {
-                // Try to get artwork from iTunes API if missing
-                const searchTerm = encodeURIComponent(`${album.artist} ${album.title}`);
-                const proxyUrl = 'https://corsproxy.io/?' + 
-                    encodeURIComponent(`https://itunes.apple.com/search?term=${searchTerm}&media=music&entity=album&limit=1`);
-                
-                // Use request queue for API calls
-                requestQueue.add(proxyUrl, image, album);
-            } else {
-                // No artwork and insufficient info for API search
-                image.classList.remove('loading');
-                image.onerror();
-            }
-        };
-        
-        // Set up intersection observer for lazy loading
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    loadArtwork();
-                    observer.disconnect(); // Stop observing once loaded
-                }
-            });
-        }, {rootMargin: "200px"}); // Load when within 200px of viewport
-        
-        // Start observing
-        observer.observe(imageContainer);
-        
         // Add the image to container
         imageContainer.appendChild(image);
 
-        // Now that the image is added, add overlay for albums without artwork
+        // Now add text overlay ONLY for albums without artwork
         if (!hasArtwork) {
             // Create overlay for text display
             const textOverlay = document.createElement('div');
