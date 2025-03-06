@@ -215,42 +215,69 @@ select.filter-input {
     justify-content: center;
 }
 
-/* NEW STYLES: Add this block just before the media queries */
 /* Styles for albums without artwork */
 .album-card.no-artwork {
-    background-color: #111;
+    /* Ensure no-artwork cards match standard album card styling */
+    background-color: #1f1f1f; 
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
 }
+
+.album-card.no-artwork .album-image-container {
+    /* Maintain a dark background for missing artwork */
+    background-color: #111 !important;
+}
+
 .album-card.no-artwork .album-image {
+    /* Ensure image fills the container completely */
     background-color: transparent;
     opacity: 1 !important;
-    object-fit: contain !important; /* Changed from cover to contain */
+    object-fit: cover !important; /* Fills entire container like standard artwork */
 }
+
 .album-card.no-artwork .album-info {
+    /* Restore standard padding and layout for album information */
+    padding: 12px;
     width: 100%;
-    text-align: center;
 }
+
 .album-card.no-artwork .album-title {
+    /* Match standard title styling with ellipsis for long titles */
+    font-weight: 600;
     font-size: 14px;
-    white-space: normal;
+    margin: 0 0 4px 0;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    max-height: 3em;
-    margin-bottom: 4px;
 }
+
 .album-card.no-artwork .album-artist {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 8px;
+    /* Match standard artist name styling */
+    font-size: 14px;
+    color: #9ca3af;
+    margin: 0 0 8px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-/* Styling for missing artwork overlay */
+
+.album-card.no-artwork .album-meta {
+    /* Ensure meta information (year, genre) is consistently displayed */
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-top: auto;
+    gap: 8px;
+    overflow: hidden;
+}
+
+.album-card.no-artwork:hover .album-title {
+    /* Add hover effect to title for consistency */
+    color: var(--accent-green);
+}
+
 .album-missing-overlay {
+    /* Overlay for displaying album info when no artwork is available */
     position: absolute;
     top: 0;
     left: 0;
@@ -264,27 +291,33 @@ select.filter-input {
     box-sizing: border-box;
     text-align: center;
     z-index: 2;
-    pointer-events: none; /* Let clicks go through to the card */
+    pointer-events: none;
+    background-color: rgba(0,0,0,0.3); /* Subtle darkening effect */
 }
+
 .album-missing-artist {
+    /* Styling for artist name in missing artwork overlay */
     font-weight: 700;
-    font-size: 18px;
+    font-size: 16px;
     color: white;
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 90%;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle text shadow for readability */
 }
+
 .album-missing-title {
-    font-size: 16px;
+    /* Styling for album title in missing artwork overlay */
+    font-size: 14px;
     color: rgba(255, 255, 255, 0.9);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 90%;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle text shadow for readability */
+}
 }
 .album-card.no-artwork:hover .album-image {
     transform: none;
