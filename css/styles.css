@@ -233,7 +233,6 @@ select.filter-input {
 .album-card.no-artwork .album-info {
     /* Restore standard padding and layout for album information */
     padding: 12px;
-    width: 100%;
 }
 
 .album-card.no-artwork .album-title {
@@ -292,7 +291,7 @@ select.filter-input {
 .album-missing-artist {
     /* Styling for artist name in missing artwork overlay */
     font-weight: 700;
-    font-size: 16px;
+    font-size: 18px;
     color: #1a1a1a;
     margin-bottom: 6px;
     white-space: nowrap;
@@ -303,13 +302,12 @@ select.filter-input {
 
 .album-missing-title {
     /* Styling for album title in missing artwork overlay */
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    color: #1a1a1a;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     width: 90%;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle text shadow for readability */
 }
 }
 .album-card.no-artwork:hover .album-image {
