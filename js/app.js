@@ -138,6 +138,28 @@ function displayAlbums(albums) {
         const hasArtwork = album.artwork && album.artwork.trim() !== '';
         if (!hasArtwork) {
             card.classList.add('no-artwork');
+            
+            // Set initial source to the default background
+            image.src = 'https://iili.io/HlHy9Yx.png';
+            
+            // Only add text overlay for albums without artwork
+            // Create overlay for text display
+            const textOverlay = document.createElement('div');
+            textOverlay.className = 'album-missing-overlay';
+            textOverlay.innerHTML = `
+                <div class="album-missing-artist">${album.artist || 'Unknown Artist'}</div>
+                <div class="album-missing-title">${album.title || 'Unknown Title'}</div>
+            `;
+            
+            // Append overlay to image container after the image is added
+            setTimeout(() => {
+                imageContainer.appendChild(textOverlay);
+            }, 0);
+        } else {
+            // For albums with artwork, use a temporary placeholder 
+            // until the actual artwork loads - but NO text overlay
+            const tempPlaceholder = `https://placehold.co/400x400/121212/444444?text=${encodeURIComponent('Loading...')}`;
+            image.src = tempPlaceholder;
         }
         
         const imageContainer = document.createElement('div');
@@ -177,9 +199,9 @@ function displayAlbums(albums) {
             image.classList.remove('loading');
             image.classList.add('error');
             
-            // Only set source if we haven't already created an overlay
-            if (!imageContainer.querySelector('.album-missing-overlay')) {
-                // Use the default background image for missing artwork
+            // Only add overlay for albums without artwork that don't already have one
+            if (!hasArtwork && !imageContainer.querySelector('.album-missing-overlay')) {
+                // Use the default background image
                 this.src = 'https://iili.io/HlHy9Yx.png';
                 
                 // Create overlay for text display
@@ -192,6 +214,10 @@ function displayAlbums(albums) {
                 
                 // Append overlay to image container
                 imageContainer.appendChild(textOverlay);
+            } else if (hasArtwork) {
+                // For albums that should have artwork but failed to load,
+                // just show a simple placeholder with no text overlay
+                this.src = `https://placehold.co/400x400/121212/444444?text=${encodeURIComponent('No Image')}`;
             }
         };
 
